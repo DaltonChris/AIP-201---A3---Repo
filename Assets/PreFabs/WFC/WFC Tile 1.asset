@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f48918289c0f3f54a9933c8e91320b1e, type: 3}
   m_Name: WFC Tile 1
   m_EditorClassIdentifier: 
-  gameObject: {fileID: 0}
+  gameObject: {fileID: 7839099761779529149, guid: d6fa6376fbb58454daa2f8b8d1e9a461, type: 3}
   left: 0
   right: 0
   top: 0
