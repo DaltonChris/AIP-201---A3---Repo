@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public struct WaveCell
@@ -16,7 +17,12 @@ public struct WaveCell
     // Boolean flag to be flagged if the tile (Cell) has been collapsed. ie. the type state has be decided.
     public bool hasCollapsed;
 
-
+    public WaveCell(Tile[] DEFAULT_supPostion)
+    {
+        tile = null;
+        hasCollapsed = false;
+        SupPositonList = DEFAULT_supPostion.ToList();
+    }
 
 
 
