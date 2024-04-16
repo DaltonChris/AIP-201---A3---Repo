@@ -1,14 +1,23 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 [System.Serializable]
 public struct WaveCell
 {
-    public bool hasCollapsed;
+    // Each title could be many types of tiles depending on what will randomly collapse around them altering the types of
+    // Tiles that could be valid, entropy will slowly lower during the further collapse of surrounding tiles. I think reee
+    public int Entropy => SupPositonList.Count; // The total possible states A-TILE within the grid? i think maybe
+
+    // List of all the tile's possible states that the tile could or could not be 
     public List<Tile> SupPositonList;
+
+    // A tile (Atleast this is striaght forward lmao)
     public Tile tile;
 
-    public int Entropy => SupPositonList.Count;
+    // Boolean flag to be flagged if the tile (Cell) has been collapsed. ie. the type state has be decided.
+    public bool hasCollapsed;
+
+
+
 
 
     // Start is called before the first frame update
