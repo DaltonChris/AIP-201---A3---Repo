@@ -1,9 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/*
+    Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his ASCII rouge-like: Hauberk 
+    --- [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
+
+    Hauberk: The Game his Prodcedual generation was developed for and that the article refers to [Very cool project] (written in Dart [what even is Dart amirite])   
+    --- [2014 - 2024] https://github.com/munificent/hauberk
+*/
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] int GridWidth; // Width of the grid to generate (To be set in the inspector) (Must be odd)
@@ -36,6 +44,16 @@ public class LevelGenerator : MonoBehaviour
         PopulateGrid(TileType.Wall); // Populate grid with Tiles of wall type as default
         yield return new WaitForSeconds(LevelGenDelay);
         PopulateGrid_WithRooms(TileType.Path); // Populate grid with rooms
+        yield return new WaitForSeconds(LevelGenDelay);
+        // Populate the grid with mazes in free spaces - TO DO
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        yield return new WaitForSeconds(LevelGenDelay);
+        // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region  - TO DO
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        yield return new WaitForSeconds(LevelGenDelay);
+        // remove dead ends "Paths Tiles with 3 walls"  - TO DO
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
     /// <summary>
@@ -87,27 +105,50 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < RoomGenAttempts; i++)
         {
             #region Randomise Room Size / Position
-            // min 7 max 9
             int size = Random.Range(3, 5) * 2 + 1; // Random range between 3,5 Multiplied by 2 + 1 to keep rooms odd
             int width = size; // declare width int set to size
             int height = size / 2; // declare height int set to half size
 
             // Randomly int the width 50% chance
             if (Random.Range(0, 2) == 0) width *= 2; // If is 0, double width
+            if (height % 2 == 0) height++; // If height isn't odd Increment height  [Ensure they are odd]
+            if (width % 2 == 0) width++; // If width isn't odd Increment height  [Ensure they are odd]
 
             // Randomise x,y position in grid for room to be placed
-            // Random number between 2 and the width of the Levels grid - width (room width) - Do same for height
-            int x = Random.Range(2, GridWidth - width);
-            int y = Random.Range(2, GridHeight - height);
+            // Random number between (1 and the width of the Levels grid - RoomWidth / 2 ) * 2 + 1 | to always bee and odd number for the postions - Do same for height
+            int x = Random.Range(1, (GridWidth - width) / 2) * 2 + 1;
+            int y = Random.Range(1, (GridHeight - height) / 2) * 2 + 1;
             #endregion
 
+            #region Check if this room would overlap existing rooms
+            bool overlaps = false; // flag for a check if the rooms overlap
 
-            //Debug log for each room positon and width/height
-            Debug.Log($"Room being added @ - X: {x} Y: {y} Size: Width: {width} Height: {height}");
-            
-            StartRegion(); // Start a new region (Increment current region)
+            // For each position from the randomised start-postion - 1 (extra 1 tile check for a boundry) through to start-position + height/width + 1 (extra tile row/col)
+            for (int yy = y - 1; yy < y + height + 1 && !overlaps; yy++) // Y axis loop (Height)
+            {
+                for (int xx = x - 1; xx < x + width + 1 && !overlaps; xx++) // X axis loop (Width)
+                {
+                    Vector2Int roomPos = new Vector2Int(xx, yy); // A vector2 of the current x,y position in the grid of (Room position)
+                    foreach (var room in RoomList) // For each position of current rooms in room list
+                    {
+                        // Check if the absolute differences between the current roomPos and the stored room pos is <=1 for each x/y
+                        if (Mathf.Abs(roomPos.x - room.x) <= 1 && Mathf.Abs(roomPos.y - room.y) <= 1)
+                        {
+                            // If it is the rooms overlap
+                            overlaps = true; // Set flag to true
+                            break; // exit the foreach
+                        }
+                    }
+                }
+            }
+            if (overlaps) continue; // If overlaps dont add this room and attempt another room
+            #endregion 
+
+            Debug.Log($"Room being added @ - X: {x} Y: {y} Size: Width: {width} Height: {height}"); //Debug log for each room positon and width/height
 
             #region Add the room to the grid
+            StartRegion(); // Start a new region (Increment current region)
+
             // loop through grid positions (starting at the randomise x,y position)
             for (int yy = y; yy < y + height; yy++) // For each Position in the grids y axis from start pos -> to start pos + height (room height)
             {
@@ -132,4 +173,23 @@ public class LevelGenerator : MonoBehaviour
     {
         CurrentRegion++; // Increment Current region
     }
+
+    /// <summary>
+    /// A method used get a list of vectors representing the cardinal directions: up, down, left, and right. 
+    /// (Short hand vector directions for N, S, E, W)
+    /// </summary>
+    /// <returns>
+    /// A list of <see cref="Vector2Int"/> containing the cardinal directions.
+    /// </returns>
+    private List<Vector2Int> GetDirections()
+    {
+        return new List<Vector2Int>
+    {
+        Vector2Int.up,
+        Vector2Int.down,
+        Vector2Int.left,
+        Vector2Int.right
+    };
+    }
+
 }
