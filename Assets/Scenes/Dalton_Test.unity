@@ -358,6 +358,10 @@ PrefabInstance:
       propertyPath: GridHeight
       value: 61
       objectReference: {fileID: 0}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: RoomGenAttempts
+      value: 1200
+      objectReference: {fileID: 0}
     - target: {fileID: 6145024958977995743, guid: 5f05cdb4edffd044892587316a522568, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
