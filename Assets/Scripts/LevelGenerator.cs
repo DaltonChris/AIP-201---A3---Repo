@@ -6,11 +6,11 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 /*
-    Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his ASCII rouge-like: Hauberk 
+    Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written in Dart. Hauberk 
     --- [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 
-    Hauberk: The Game his Prodcedual generation was developed for and that the article refers to [Very cool project] (written in Dart [what even is Dart amirite])   
-    --- [2014 - 2024] https://github.com/munificent/hauberk
+    The Game his Prodcedual generation was developed for and that the article refers to [Very cool project] 
+    --- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
 */
 public class LevelGenerator : MonoBehaviour
 {
@@ -22,38 +22,45 @@ public class LevelGenerator : MonoBehaviour
 
     int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region 
     int CurrentRegion = -1; // Current region (declared at -1, first region to be 0)
-    readonly float LevelGenDelay = 1f; // The delay inbetween each generation action (To better visualise while developing)
-    List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
+    
+    readonly float LevelGenDelay = 1.5f; // The delay inbetween each generation action (To better visualise while developing)
+    readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
 
 
     void Update()
     {
         #region Wait for SpaceBar before generating
-        if (Input.GetKeyDown(KeyCode.Space)) // If spacebar is pressed
-        {
-            StopAllCoroutines(); // Stop all coroutines
-            InitGrid(GridWidth, GridHeight); // Initalise the grid (Start generating)
-        }
+        // If spacebar is pressed
+        if (Input.GetKeyDown(KeyCode.Space)) InitGrid(GridWidth, GridHeight); // Initalise the grid (Start generating)
         #endregion
     }
 
-    // Coroutine to Go through the Level Generation Steps was small pauses between steps
+    /// <summary>
+    /// Coroutine to Go through the Level Generation Steps was small pauses between steps
+    /// </summary>
     IEnumerator GenerateLevel()
     {
-        yield return new WaitForSeconds(LevelGenDelay);
+        yield return new WaitForSeconds(LevelGenDelay/2);
         PopulateGrid(TileType.Wall); // Populate grid with Tiles of wall type as default
         yield return new WaitForSeconds(LevelGenDelay);
-        PopulateGrid_WithRooms(TileType.Path); // Populate grid with rooms
+        PopulateGrid_Rooms(TileType.Path); // Populate grid with rooms
         yield return new WaitForSeconds(LevelGenDelay);
         // Populate the grid with mazes in free spaces - TO DO
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PopulateGrid_Mazes();
         yield return new WaitForSeconds(LevelGenDelay);
         // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region  - TO DO
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         yield return new WaitForSeconds(LevelGenDelay);
         // remove dead ends "Paths Tiles with 3 walls"  - TO DO
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
+
+    /// <summary>
+    /// Increments the CurrentRegion int (Each int is a marker of a region)
+    /// </summary>
+    void StartRegion()
+    {
+        CurrentRegion++; // Increment Current region
     }
 
     /// <summary>
@@ -66,12 +73,17 @@ public class LevelGenerator : MonoBehaviour
     /// <param name="height"> the height of the grid to initalise </param>
     void InitGrid(int width, int height)
     {
+        #region Ensure Grid size is Odd
         if (width % 2 == 0 || height % 2 == 0) // If width / height are divisable by 2 with no remainder they are even.
         {
             throw new ArgumentException("The width & height must be odd numbers"); // Throw exception 
         }
+        #endregion
+
+        #region Initalise Arrays
         Tiles = new Tile[width, height]; // initalise Tiles array with width/height.
         Regions = new int[width, height]; // initalise Regions array with width/height.
+        #endregion
 
         StartCoroutine(GenerateLevel()); // Start Generate Level coroutine
     }
@@ -87,11 +99,13 @@ public class LevelGenerator : MonoBehaviour
         {
             for (int x = 0; x < GridWidth; x++) // For each Position in the grids X axis
             {
+                #region Instantiate Tiles in all Grid cells
                 // Instantiate a tile Prefab at the current x,y pos in the grid
                 GameObject tileObject = Instantiate(TilePreFab, new Vector3(x, y, 0), Quaternion.identity);
                 Tile tilePlaced = tileObject.GetComponent<Tile>(); // Get the tileprefabs Tile script
                 Tiles[x, y] = tilePlaced; // add the tile script the the Tiles array at the current pos
                 tilePlaced.SetType(tile); // Set the TileType to the type passed to the method
+                #endregion
             }
         }
     }
@@ -100,7 +114,7 @@ public class LevelGenerator : MonoBehaviour
     /// A method to populate the grid with various randomly sized rooms at random positions
     /// </summary>
     /// <param name="roomTile"> The tileType to set the rooms tiles to </param>
-    void PopulateGrid_WithRooms(TileType roomTile)
+    void PopulateGrid_Rooms(TileType roomTile)
     {
         for (int i = 0; i < RoomGenAttempts; i++)
         {
@@ -167,11 +181,105 @@ public class LevelGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Increments the CurrentRegion int (Each int is a marker of a region)
+    /// Fill the Rest of the Grid with mazes starting from odd Positions in the LevelGrid
     /// </summary>
-    private void StartRegion()
+    void PopulateGrid_Mazes()
     {
-        CurrentRegion++; // Increment Current region
+        // Loop through the grid's odd positions
+        for (int y = 1; y < GridHeight; y += 2) // Loop through the grid's odd y positions
+        {
+            for (int x = 1; x < GridWidth; x += 2) // Loop through the grid's odd x positions
+            {
+                #region Check if current position is valid to start a maze
+                Vector2Int mazeStartPos = new(x, y); // Current position - Possible Maze start position
+                // Check if the tile at the current position is a wall
+                if (Tiles[x, y].Type != TileType.Wall) continue; // Tile isn't a wall, go to the next odd position
+                
+                GenerateMaze(mazeStartPos); // Start generating the maze from the current position
+                #endregion
+            }
+        }
+    }
+
+    /// <summary>
+    /// A method that will Open the path of the maze up from the given startPosition while continuing to 
+    /// Check if the path is valid
+    /// </summary>
+    /// <param name="startPosition"> The Positon in the Grid to start teh maaze </param>
+    void GenerateMaze(Vector2Int startPosition)
+    {
+        #region Process Start Position
+
+        var gridCells = new List<Vector2Int>(); // List to keep track of cells
+        StartRegion(); // Start a new region (increment)
+        OpenPath(startPosition); // Open the starting cell
+        gridCells.Add(startPosition); // Add the starting cell to the list
+        #endregion
+
+        while (gridCells.Count > 0) // While there is still atleast 1 position in the list of GridCells
+        {
+            Vector2Int cell = gridCells[gridCells.Count - 1]; // Get the last cell from the list
+            var pathCells = new List<Vector2Int>(); // List to keep track of directions int the path that are not open
+
+            foreach (var direction in GetDirections()) // Check each direction (up, down, left, right)
+            {
+                #region Check if Cell is valid in path in the direcetion
+                // Check if we can open a path in the current direction
+                if (IsValidPath(cell, direction) && IsValidPath(cell + direction * 2, direction)) // Check current cell and future cells
+                {
+                    pathCells.Add(direction); // Add the direction to the list of unopened cells
+                }
+                #endregion
+            }
+            if (pathCells.Count > 0) // Theres atleast 1 path position that can be Opened
+            {
+                #region Open Path Cells & Add Next Cell to Cell list
+                // Randomly select a direction from the list of Path Cells
+                Vector2Int direction = pathCells[Random.Range(0, pathCells.Count)];
+
+                OpenPath(cell + direction); // Open the cell in the selected direction
+                OpenPath(cell + direction * 2); // Open the next cell in the same direction
+                gridCells.Add(cell + direction * 2); // Add the next cell to the list
+                #endregion
+            }
+            else gridCells.RemoveAt(gridCells.Count - 1); // Remove the last cell from the list
+        }
+    }
+
+    /// <summary>
+    /// Method to Check if we can open a path in a given direction from a position..
+    /// Is the future path positon inside the Levels Grid/ Is the Future path in the direction a TileType.Wall?
+    /// </summary>
+    /// <param name="position">  </param>
+    /// <param name="direction">  </param>
+    /// <returns>  </returns>
+    bool IsValidPath(Vector2Int position, Vector2Int direction)
+    {
+        // Calculate the resulting position after opening a path (current x,y position + direction * 2 [ie from where we are 2 steps in that direction])
+        Vector2Int nextPosition = position + direction * 2;
+
+        // Check if the resulting position after opening a path is out of bounds
+        if (nextPosition.x < 0 || nextPosition.x >= GridWidth ||nextPosition.y < 0 || nextPosition.y >= GridHeight)
+            return false; // The position is outside of the grid. Path is not valid
+
+        // Check if the tile two steps in the specified direction from the given position is a wall
+        if (Tiles[nextPosition.x, nextPosition.y].Type == TileType.Wall) 
+            return true; // The path is Valid as tile is a wall (Path can be opened)
+        
+        else return false; // Else path is not valid 
+    }
+
+    /// <summary>
+    /// Open the path at the passed Vector2 position in the grid
+    /// </summary>
+    /// <param name="position"> The Position to Open (Vector2Int) </param>
+    void OpenPath(Vector2Int position)
+    {
+        // At the position in the Tiles array - Set the tile type to path
+        Tiles[position.x, position.y].SetType(TileType.Path);
+
+        // At the position in the Tiles array -  Set the region for the path's position
+        Regions[position.x, position.y] = CurrentRegion; 
     }
 
     /// <summary>
@@ -181,15 +289,17 @@ public class LevelGenerator : MonoBehaviour
     /// <returns>
     /// A list of <see cref="Vector2Int"/> containing the cardinal directions.
     /// </returns>
-    private List<Vector2Int> GetDirections()
+    List<Vector2Int> GetDirections()
     {
-        return new List<Vector2Int>
-    {
-        Vector2Int.up,
-        Vector2Int.down,
-        Vector2Int.left,
-        Vector2Int.right
-    };
+        return new List<Vector2Int>{
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right
+        };
     }
+    /// <summary>
+    /// Connects regions in the maze by finding connectors and creating connections between them.
+    /// </summary>
 
 }
