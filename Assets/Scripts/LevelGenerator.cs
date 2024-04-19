@@ -298,8 +298,5 @@ public class LevelGenerator : MonoBehaviour
             Vector2Int.right
         };
     }
-    /// <summary>
-    /// Connects regions in the maze by finding connectors and creating connections between them.
-    /// </summary>
 
 }

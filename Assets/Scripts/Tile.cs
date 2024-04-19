@@ -4,13 +4,15 @@ using UnityEngine;
 public enum TileType
 {
     Wall,
-    Path
+    Path,
+    Grass
 }
 
 public class Tile : MonoBehaviour
 {
     [SerializeField] Sprite WallSprite;
     [SerializeField] Sprite PathSprite;
+    [SerializeField] Sprite GrassSprite;
     SpriteRenderer SpriteRenderer;
     public TileType Type { get; internal set; }
 
@@ -36,6 +38,9 @@ public class Tile : MonoBehaviour
                 break;
             case TileType.Path: // Case Path Type, Set Wall Sprite
                 SpriteRenderer.sprite = PathSprite;
+                break;
+            case TileType.Grass: // Case Grass Type, Set Grass Sprite
+                SpriteRenderer.sprite = GrassSprite;
                 break;
             default:
                 break;
