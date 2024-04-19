@@ -12,3 +12,6 @@
 - Dalton Christopher
 - Kenbe Yeung
 - Stefan Popa
+
+## Tasks Per Member:
+-Dalton: Procedual level generation
