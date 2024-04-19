@@ -17,13 +17,20 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] int GridWidth; // Width of the grid to generate (To be set in the inspector) (Must be odd)
     [SerializeField] int GridHeight; // Width of the grid to generate (To be set in the inspector) (Must be odd)
     [SerializeField] int RoomGenAttempts = 300; // How many times we try to generate a room
-    [SerializeField] GameObject TilePreFab; // Prefab for the tile obj
+    [SerializeField] int StartRoomSize = 6; // How many times we try to generate a room
     [SerializeField] Tile[,] Tiles;
+    [SerializeField] GameObject TilePreFab; // Prefab for the tile obj
+    [SerializeField] GameObject LadderPreFab; // Prefab for the tile obj
+    [SerializeField] GameObject CoinPreFab;
+    [SerializeField] GameObject ChestPreFab;
+    [SerializeField] GameObject LightPreFab;
+    
 
     int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region 
     int CurrentRegion = -1; // Current region (declared at -1, first region to be 0)
     
-    readonly float LevelGenDelay = 1.5f; // The delay inbetween each generation action (To better visualise while developing)
+    readonly int ConnectorAttempts = 25; // How many times will we try to create region connectors
+    readonly float LevelGenDelay = 0.75f; // The delay inbetween each generation action (To better visualise while developing)
     readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
 
 
@@ -40,18 +47,38 @@ public class LevelGenerator : MonoBehaviour
     /// </summary>
     IEnumerator GenerateLevel()
     {
-        yield return new WaitForSeconds(LevelGenDelay/2);
-        PopulateGrid(TileType.Wall); // Populate grid with Tiles of wall type as default
         yield return new WaitForSeconds(LevelGenDelay);
-        PopulateGrid_Rooms(TileType.Path); // Populate grid with rooms
+        PopulateGrid(TileType.Wall); // Populate grid with Tiles of wall type as default
+
+        yield return new WaitForSeconds(LevelGenDelay);
+        PopulateGrid_Rooms(TileType.Path); // Populate grid with roomsv
+        
+        yield return new WaitForSeconds(LevelGenDelay);
+        AllocateStartArea(StartRoomSize);
+
         yield return new WaitForSeconds(LevelGenDelay);
         // Populate the grid with mazes in free spaces - TO DO
         PopulateGrid_Mazes();
+
         yield return new WaitForSeconds(LevelGenDelay);
         // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region  - TO DO
+        //ConnectRegions(); - TO DO
 
         yield return new WaitForSeconds(LevelGenDelay);
         // remove dead ends "Paths Tiles with 3 walls"  - TO DO
+        CloseDeadEnds();
+
+        yield return new WaitForSeconds(LevelGenDelay);
+        //SpawnLadders(); - TO DO
+
+        yield return new WaitForSeconds(LevelGenDelay);
+        //SetGrassTiles(); - TO DO
+
+        yield return new WaitForSeconds(LevelGenDelay);
+        //SpawnCoins(); - TO DO
+
+        yield return new WaitForSeconds(LevelGenDelay);
+        //SpawnLights(); - TO DO
 
     }
 
@@ -119,14 +146,14 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < RoomGenAttempts; i++)
         {
             #region Randomise Room Size / Position
-            int size = Random.Range(3, 5) * 2 + 1; // Random range between 3,5 Multiplied by 2 + 1 to keep rooms odd
+            int size = Random.Range(2, 5) * 2 + 1; // Random range between 3,5 Multiplied by 2 + 1 to keep rooms odd
             int width = size; // declare width int set to size
             int height = size / 2; // declare height int set to half size
 
-            // Randomly int the width 50% chance
-            if (Random.Range(0, 2) == 0) width *= 2; // If is 0, double width
+            // Randomly int the width 33~% chance
+            if (Random.Range(0, 3) == 0) width *= 2; height++; // If is 0, double width
             if (height % 2 == 0) height++; // If height isn't odd Increment height  [Ensure they are odd]
-            if (width % 2 == 0) width++; // If width isn't odd Increment height  [Ensure they are odd]
+            if (width % 2 == 0) width--; // If width isn't odd Increment height  [Ensure they are odd]
 
             // Randomise x,y position in grid for room to be placed
             // Random number between (1 and the width of the Levels grid - RoomWidth / 2 ) * 2 + 1 | to always bee and odd number for the postions - Do same for height
@@ -178,6 +205,35 @@ public class LevelGenerator : MonoBehaviour
             }
             #endregion
         }
+    }
+
+    void AllocateStartArea(int startRoomSize)
+    {
+        
+        // loop through all grid positions
+        StartRegion(); // Start a new region (Increment current region)
+        for (int y = 1; y < startRoomSize; y++) // For each Position in the grids y axis
+        {
+            for (int x = 1; x < startRoomSize; x++) // For each Position in the grids X axis
+            {
+                #region Create starting Room
+                Tiles[x, y].SetType(TileType.Path); // Set type
+                Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile
+                // Add the room position to the RoomList 
+                RoomList.Add(new Vector2Int(x, y));
+                #endregion
+            }
+        }
+        for (int x = startRoomSize; x < startRoomSize*2; x++)
+        {
+            int y  = startRoomSize / 2;
+            Tiles[x, y].SetType(TileType.Path); // Set type
+            Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile
+                                          // Add the room position to the RoomList 
+            RoomList.Add(new Vector2Int(x, y));
+        }
+
+
     }
 
     /// <summary>
@@ -283,6 +339,68 @@ public class LevelGenerator : MonoBehaviour
     }
 
     /// <summary>
+    /// A method that is used to merge 2 Regions together
+    /// </summary>
+    /// <param name="Region"> Region to merge with 'RegionToMerge' </param>
+    /// <param name="RegionToMerge"> The region to merge </param>
+    void MergeRegions(int Region, int RegionToMerge)
+    {
+        // loop through all grid positions
+        for (int y = 0; y < GridHeight; y++) // For each Position in the grids y axis
+        {
+            for (int x = 0; x < GridWidth; x++) // For each Position in the grids X axis
+            {
+                if (Regions[x, y] == RegionToMerge) Regions[x, y] = Region; // Set RegionToMerge To Region
+            }
+        }
+    }
+
+    /// <summary>
+    /// Opens a connection at the given tile used to connect two isolated regions
+    /// </summary>
+    /// <param name="position">Position of the connector tile</param>
+    void OpenConnection(Vector2Int position)
+    {
+        Tiles[position.x, position.y].SetType(TileType.Path); // Set tile type to path
+    }
+
+    /// <summary>
+    /// A method that will close the dead ends provided the regions are connected.
+    /// Deadends are found by checking if 3 or more walls are found to be surrounding a floor tile.
+    /// </summary>
+    private void CloseDeadEnds()
+    {
+        bool closed = false; // flag to continue the loop while the dead end isnt closed
+
+        while (!closed) // while dead end path isnt close
+        {
+            closed = true; // Set to true so if a wall isnt closed this iteration the while loop will exit
+
+            // loop through all grid positions
+            for (int x = 0; x < GridWidth; x++) // For each Position in the grids y axis
+            {
+                for (int y = 0; y < GridHeight; y++) // For each Position in the grids X axis
+                {
+                    if (Tiles[x, y].Type == TileType.Path)// Check if the tile is a path tile Type
+                    {
+                        int wallCount = 0; // To count surounding walls of a current cell 
+                        foreach (var direction in GetDirections()) // Check each direction
+                        {
+                            // If the tile in the direction is of TileType Wall, Increment wallcount
+                            if (Tiles[x + direction.x, y + direction.y].Type == TileType.Wall) wallCount++;
+                        }
+                        if (wallCount >= 3) // If there are 3 walls around the tile, change its type to a wall
+                        {
+                            Tiles[x, y].SetType(TileType.Wall); // Set Tile Type to Wall at the position
+                            closed = false; // Set the flag to false as a Dead end path is stil being closed
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// A method used get a list of vectors representing the cardinal directions: up, down, left, and right. 
     /// (Short hand vector directions for N, S, E, W)
     /// </summary>
@@ -298,5 +416,8 @@ public class LevelGenerator : MonoBehaviour
             Vector2Int.right
         };
     }
+    
+
+
 
 }
