@@ -21,10 +21,10 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] Tile[,] Tiles;
     [SerializeField] GameObject TilePreFab; // Prefab for the tile obj
     [SerializeField] GameObject LadderPreFab; // Prefab for the tile obj
-    [SerializeField] GameObject CoinPreFab;
-    [SerializeField] GameObject ChestPreFab;
-    [SerializeField] GameObject LightPreFab;
-    
+    [SerializeField] GameObject CoinPreFab; // Prefab for the coin obj
+    [SerializeField] GameObject ChestPreFab; // Prefab for the chest obj
+    [SerializeField] GameObject LightPreFab; // Prefab for the light obj
+
 
     int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region 
     int CurrentRegion = -1; // Current region (declared at -1, first region to be 0)
@@ -33,14 +33,13 @@ public class LevelGenerator : MonoBehaviour
     readonly float LevelGenDelay = 0.75f; // The delay inbetween each generation action (To better visualise while developing)
     readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
 
-
+    #region Wait for SpaceBar before generating
     void Update()
     {
-        #region Wait for SpaceBar before generating
         // If spacebar is pressed
         if (Input.GetKeyDown(KeyCode.Space)) InitGrid(GridWidth, GridHeight); // Initalise the grid (Start generating)
-        #endregion
     }
+    #endregion
 
     /// <summary>
     /// Coroutine to Go through the Level Generation Steps was small pauses between steps
@@ -57,7 +56,7 @@ public class LevelGenerator : MonoBehaviour
         AllocateStartArea(StartRoomSize);
 
         yield return new WaitForSeconds(LevelGenDelay);
-        // Populate the grid with mazes in free spaces - TO DO
+        // Populate the grid with mazes in free spaces
         PopulateGrid_Mazes();
 
         yield return new WaitForSeconds(LevelGenDelay);
@@ -65,20 +64,19 @@ public class LevelGenerator : MonoBehaviour
         ConnectRegions();
 
         yield return new WaitForSeconds(LevelGenDelay);
-        // remove dead ends "Paths Tiles with 3 walls"  - TO DO
-        CloseDeadEnds();
+        CloseDeadEnds(); // remove dead ends "Paths Tiles with 3 walls"
+        
+        yield return new WaitForSeconds(LevelGenDelay);
+        SpawnLadders(); // Spawn in ladder objects at required positions (Must be called before setting grass tiles)
 
         yield return new WaitForSeconds(LevelGenDelay);
-        //SpawnLadders(); - TO DO
+        SetGrassTiles(); // Update "Wall" Tiles to "Grass" tiles at required places
 
         yield return new WaitForSeconds(LevelGenDelay);
-        //SetGrassTiles(); - TO DO
+        SpawnCoins(); // Spawn coins / Chests
 
         yield return new WaitForSeconds(LevelGenDelay);
-        //SpawnCoins(); - TO DO
-
-        yield return new WaitForSeconds(LevelGenDelay);
-        //SpawnLights(); - TO DO
+        SpawnLights(); // Spawn Lights in rooms randomly
 
     }
 
@@ -368,7 +366,7 @@ public class LevelGenerator : MonoBehaviour
     /// A method that will close the dead ends provided the regions are connected.
     /// Deadends are found by checking if 3 or more walls are found to be surrounding a floor tile.
     /// </summary>
-    private void CloseDeadEnds()
+    void CloseDeadEnds()
     {
         bool closed = false; // flag to continue the loop while the dead end isnt closed
 
@@ -435,6 +433,7 @@ public class LevelGenerator : MonoBehaviour
             CreateConnections(mainRegion, connectors);
         }
     }
+
     /// <summary>
     /// Finds and returns all connector positions in the maze.
     /// </summary>
@@ -486,11 +485,12 @@ public class LevelGenerator : MonoBehaviour
         }
         return connectors; // Return the list of connector positions
     }
+
     /// <summary>
     /// Creates connections between regions
     /// </summary>
-    /// <param name="mainRegion">Main region to start the connection process.</param>
-    /// <param name="connectors">List of connector positions.</param>
+    /// <param name="mainRegion"> Main region to start the connection process </param>
+    /// <param name="connectors"> List of connector positions </param>
     void CreateConnections(int mainRegion, List<Vector2Int> connectors)
     {
         // List of ints to reflect the Regions we have visted
@@ -526,5 +526,184 @@ public class LevelGenerator : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Checks if a tile in the grid is a wall-type and has a path type above it (y+1)
+    /// This is the check made to set grass tiles in the grid
+    /// </summary>
+    /// <param name="x"> x postion of tile </param>
+    /// <param name="y"> y position of tile to check </param>
+    /// <returns> True if tile is a wall with path above / else false </returns>
+    bool IsWallWithPathAbove(int x, int y)
+    {
+        // Check if the current tile is a wall tile
+        if (Tiles[x, y].Type != TileType.Wall) return false;
 
+        // Check if there's a path tile above this tile
+        if (y < GridHeight - 1 && Tiles[x, y + 1].Type == TileType.Path)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if a tile in the grid is a wall-type and has a path type below it (y-1)
+    /// </summary>
+    /// <param name="x"> x postion of tile </param>
+    /// <param name="y"> y position of tile to check </param>
+    /// <returns> True if tile is a wall with path below / else false </returns>
+    bool IsWallWithPathBelow(int x, int y)
+    {
+        // Check if the current tile is a wall tile
+        if (Tiles[x, y].Type != TileType.Wall) return false;
+
+        // Check if there's a path tile Below this tile
+        if (y > 0 && Tiles[x, y - 1].Type == TileType.Path)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if the tile at the position is surrounded by walls to the left and right
+    /// and paths to the up and down.
+    /// </summary>
+    /// <param name="x"> x postion of tile </param>
+    /// <param name="y"> x postion of tile </param>
+    /// <returns>True if the tile matches the described pattern, otherwise false.</returns>
+    bool IsLadderPosition(int x, int y)
+    {
+        // Check if the current tile is a path tile
+        if (Tiles[x, y].Type != TileType.Path) return false;
+
+        if (x > 0 && x < GridWidth - 1) // Check if either tiles to the left and right are not walls
+        {
+            if (Tiles[x - 1, y].Type != TileType.Wall || Tiles[x + 1, y].Type != TileType.Wall)
+                return false;
+        }
+        if (y > 0 && y < GridHeight - 1) // Check if either tiles above and below are not paths
+        {
+            if (Tiles[x, y - 1].Type != TileType.Path || Tiles[x, y + 1].Type != TileType.Path)
+                return false;
+        }
+
+        return true; // Both tiles up/down are paths, both tiles to the sides are walls
+    }
+
+    /// <summary>
+    /// Checks if a tile at aposition is in the RoomList
+    /// </summary>
+    /// <param name="x"> x postion of tile </param>
+    /// <param name="y"> y position of tile to check </param>
+    /// <returns> True if the tile is in the RoomList. else false </returns>
+    bool IsTileInRoomList(int x, int y)
+    {
+        // Create a Vector2Int from the given coordinates
+        Vector2Int tilePosition = new Vector2Int(x, y);
+
+        // Check if the tile position is in the RoomList
+        if (RoomList.Contains(tilePosition))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if the tile at the given position is a grass tile.
+    /// </summary>
+    /// <param name="x">The x-coordinate of the tile to check.</param>
+    /// <param name="y">The y-coordinate of the tile to check.</param>
+    /// <returns>True if the tile is a grass tile, otherwise false.</returns>
+    bool IsGrassTile(int x, int y)
+    {
+        // Check if the tile at (x, y) is a grass tile
+        if (Tiles[x, y].Type == TileType.Grass)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Loops through the grid and checks each tile using the "IsWallWithPathAbove" method
+    /// If that check returns true then the tile type of the current positon is set to Grass
+    /// </summary>
+    void SetGrassTiles()
+    {
+        for (int y = 0; y < GridHeight - 1; y++)
+        {
+            for (int x = 0; x < GridWidth - 1; x++)
+            {
+                if (IsWallWithPathAbove(x, y))
+                {
+                    // Set the type of the tile at the current x,y pos 
+                    Tiles[x, y].SetType(TileType.Grass);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void SpawnLadders()
+    {
+        for (int y = 1; y < GridHeight - 1; y++)
+        {
+            for (int x = 1; x < GridWidth - 1; x++)
+            {
+                if (IsLadderPosition(x, y))
+                {
+                    Instantiate(LadderPreFab, new Vector3(x, y, 0), Quaternion.identity);
+                }
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void SpawnLights()
+    {
+        for (int y = 1; y < GridHeight; y++)
+        {
+            for (int x = 1; x < GridWidth; x++)
+            {
+                if (IsWallWithPathBelow(x, y) && IsTileInRoomList(x, y - 1))
+                {
+                    if (Random.Range(0, 11) == 0) Instantiate(LightPreFab, new Vector3(x, y, 0), Quaternion.identity);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    void SpawnCoins()
+    {
+        for (int y = 0; y < GridHeight - 1; y++)
+        {
+            for (int x = 0; x < GridWidth - 1; x++)
+            {
+                if (IsGrassTile(x, y))
+                {
+                    if (Random.Range(0, 11) == 0) Instantiate(CoinPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // spawn a coin
+
+                    if (IsTileInRoomList(x + 1, y + 1)) // Spawn a chest
+                    {
+                        if (Random.Range(0, 13) == 0) Instantiate(ChestPreFab, new Vector3(x, y + 1, 0), Quaternion.identity);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -13,7 +13,7 @@ public class TestPlayer : MonoBehaviour
 
     void Start()
     {
-        // Set the first person camera as the default camera
+        // Set the Player camera as the default camera
         currentCamera = PlayCamera;
         SetCameraActive(PlayCamera);
     }
