@@ -62,7 +62,7 @@ public class LevelGenerator : MonoBehaviour
 
         yield return new WaitForSeconds(LevelGenDelay);
         // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region  - TO DO
-        //ConnectRegions(); - TO DO
+        ConnectRegions();
 
         yield return new WaitForSeconds(LevelGenDelay);
         // remove dead ends "Paths Tiles with 3 walls"  - TO DO
@@ -416,8 +416,115 @@ public class LevelGenerator : MonoBehaviour
             Vector2Int.right
         };
     }
-    
 
+    #region Connect Region Methods
+    /// <summary>
+    /// Connects regions in the maze by finding connectors and creating connections between them.
+    /// </summary>
+    void ConnectRegions()
+    {
+        for (int i = 0; i < ConnectorAttempts; i++)
+        {
+            // Randomly get a region this will become the main region (region to be fully connected)
+            int mainRegion = 0;
+
+            // Find all connectors (positions that could be valid to connect regions) in the maze
+            var connectors = GetConnectorPositions();
+
+            // Create connections using a minimum spanning tree algorithm
+            CreateConnections(mainRegion, connectors);
+        }
+    }
+    /// <summary>
+    /// Finds and returns all connector positions in the maze.
+    /// </summary>
+    /// <returns>List of connector positions.</returns>
+    List<Vector2Int> GetConnectorPositions()
+    {
+        List<Vector2Int> connectors = new();
+
+        // Loop through the grid to search for potential connectors
+        for (int y = 1; y < GridHeight - 1; y++) // For each Position in the grids y axis
+        {
+            for (int x = 1; x < GridWidth - 1; x++) // For each Position in the grids X axis
+            {
+                // Skip the iteration if the current tile is not a wall
+                if (Tiles[x, y].Type != TileType.Wall) continue;
+
+                int region1 = -1; // Initialize the first neighboring region ID to -1
+                int region2 = -1; // Initialize the second neighboring region ID to -1
+
+                // Check the left and right neighboring tiles
+                if (Tiles[x - 1, y].Type == TileType.Path) region1 = Regions[x - 1, y];
+                if (Tiles[x + 1, y].Type == TileType.Path) region2 = Regions[x + 1, y];
+
+                // Check the upper and lower neighboring tiles
+                if (Tiles[x, y - 1].Type == TileType.Path)
+                {
+                    // If region1 is still unassigned, assign it the region ID of the upper neighbor
+                    if (region1 == -1) region1 = Regions[x, y - 1];
+
+                    // Otherwise, assign region2 the region ID of the upper neighbor
+                    else if (region2 == -1) region2 = Regions[x, y - 1];
+                }
+
+                if (Tiles[x, y + 1].Type == TileType.Path)
+                {
+                    // If region1 is still unassigned, assign it the region ID of the lower neighbor
+                    if (region1 == -1) region1 = Regions[x, y + 1];
+
+                    // Otherwise, assign region2 the region ID of the lower neighbor
+                    else if (region2 == -1) region2 = Regions[x, y + 1];
+                }
+
+                // If there are exactly two distinct neighboring regions, the tile is a connector
+                if (region1 != -1 && region2 != -1 && region1 != region2)
+                {
+                    connectors.Add(new Vector2Int(x, y)); // Add the connector position to the list
+                }
+            }
+        }
+        return connectors; // Return the list of connector positions
+    }
+    /// <summary>
+    /// Creates connections between regions
+    /// </summary>
+    /// <param name="mainRegion">Main region to start the connection process.</param>
+    /// <param name="connectors">List of connector positions.</param>
+    void CreateConnections(int mainRegion, List<Vector2Int> connectors)
+    {
+        // List of ints to reflect the Regions we have visted
+        List<int> visitedRegions = new() { mainRegion };
+
+        // List of Vect2 ints to store the connectors
+        List<Vector2Int> openConnectors = new(connectors);
+
+        // Continue looping until all regions are connected or no open connectors are left
+        while (visitedRegions.Count < CurrentRegion + 1 && openConnectors.Count > 0)
+        {
+            #region Check Connectors adjacent Regions
+            var c = openConnectors[Random.Range(0, openConnectors.Count)]; // Pick a random connector
+
+            openConnectors.Remove(c); // Remove the current connect for the openConnectors list
+
+            int region_1 = Regions[c.x, c.y]; // Region 1 = to Connector.x,y position
+
+            // Check region 2 to see if the region next to the connector is the same region as Region 1
+            int region_2 = Regions[c.x + 1, c.y] == region_1 ? Regions[c.x, c.y + 1] : Regions[c.x + 1, c.y];
+
+            // Skip if the regions connected by the connector have both been visited
+            if (visitedRegions.Contains(region_1) && visitedRegions.Contains(region_2)) continue;
+
+            OpenConnection(c); // Open the connector to connect the regions
+
+            MergeRegions(region_1, region_2); // Merge the two regions into one region
+
+            visitedRegions.Add(region_1); // Update Visted Regions list
+            visitedRegions.Add(region_2); // Update Visted Regions list
+            #endregion
+        }
+    }
+    #endregion
 
 
 }
