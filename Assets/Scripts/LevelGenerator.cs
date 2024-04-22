@@ -24,9 +24,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] GameObject CoinPreFab; // Prefab for the coin obj
     [SerializeField] GameObject ChestPreFab; // Prefab for the chest obj
     [SerializeField] GameObject LightPreFab; // Prefab for the light obj
-
-    [SerializeField] GameObject EnemyPreFab;
-
+    [SerializeField] GameObject EnemyPreFab; // Prefab for the enemy
 
     int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region 
     int CurrentRegion = -1; // Current region (declared at -1, first region to be 0)
@@ -61,7 +59,7 @@ public class LevelGenerator : MonoBehaviour
         PopulateGrid_Mazes(); // Populate the grid with mazes in free spaces
 
         yield return new WaitForSeconds(LevelGenDelay);
-        // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region
+        // (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region
         ConnectRegions();
 
         yield return new WaitForSeconds(LevelGenDelay);
@@ -88,6 +86,7 @@ public class LevelGenerator : MonoBehaviour
     {
         CurrentRegion++; // Increment Current region
     }
+
 
     /// <summary>
     /// This method takes the passed width / Height ints's and will allocate grid based locations 
@@ -712,4 +711,12 @@ public class LevelGenerator : MonoBehaviour
             }
         }
     }
+    
+
+    void SpawnEnemies()
+    {
+        // Do enemy spawning bruh
+    }
+
+    
 }
