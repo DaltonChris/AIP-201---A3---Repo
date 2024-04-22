@@ -13,6 +13,8 @@ using Random = UnityEngine.Random;
 
    The Game his Prodcedual generation was developed for and that the article refers to [Very cool project]
    -- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
+
+   There is already 26 methods and some are pretty chaotic. (Rip Edward) [My apologies]
 */
 public class LevelGenerator : MonoBehaviour
 {
@@ -28,7 +30,7 @@ public class LevelGenerator : MonoBehaviour
   [SerializeField] GameObject LightPreFab; // Prefab for the light obj
   [SerializeField] GameObject EnemyPreFab; // Prefab for the enemy
   int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region
-  int CurrentRegion = -1; // Current region (declared at -1, first region to be 0)
+  int CurrentRegion = -1; // Current region's ID (declared at -1, first region to be 0)
   readonly int ConnectorAttempts = 25; // How many times will we try to create region connectors
   readonly float LevelGenDelay = 0.75f; // The delay inbetween each generation action (To better visualise while developing)
   readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
@@ -57,7 +59,7 @@ public class LevelGenerator : MonoBehaviour
     PopulateGrid_Mazes(); // Populate the grid with mazes in free spaces
     yield return new WaitForSeconds(LevelGenDelay);
     ConnectRegions();// (Destroy a wall where the wall has a path to 1 region
-                     // (up/down || left/right) & 1 To Opposite (Different)Region
+                     // (up/down || left/right) & a (Different) Region Opposite to it
     yield return new WaitForSeconds(LevelGenDelay);
     CloseDeadEnds(); // remove dead ends "Paths Tiles with 3 walls"
     yield return new WaitForSeconds(LevelGenDelay);
@@ -211,9 +213,10 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  ///
+  /// A Method to Create a constantly placed starting room to simplify a player spawn point, after the room is allocated,
+  /// A Path 2x the room size is created horizontialy on the x axis (ensure region connection / multiple exits etc.)
   /// </summary>
-  /// <param name="startRoomSize"></param>
+  /// <param name="startRoomSize"> The size both Height & Width for the room </param>
   void AllocateStartArea(int startRoomSize)
   {
     StartRegion(); // Start a new region (Increment current region)
@@ -221,12 +224,10 @@ public class LevelGenerator : MonoBehaviour
     {
       for (int x = 1; x < startRoomSize; x++) // For each Position in the grid starting at 1 on the x axis ending at size of the start room
       {
-        #region Create starting Room
         Tiles[x, y].SetType(TileType.Path); // Set type
         Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile
                                       // Add the room position to the RoomList
         RoomList.Add(new Vector2Int(x, y));
-        #endregion
       }
     }
     for (int x = startRoomSize; x < startRoomSize * 2; x++) // Create a constant path out of the room 
@@ -250,13 +251,10 @@ public class LevelGenerator : MonoBehaviour
     {
       for (int x = 1; x < GridWidth; x += 2) // Loop through the grid's odd x positions
       {
-        #region Check if current position is valid to start a maze
         Vector2Int mazeStartPos = new(x, y); // Current position - Possible Maze start position
                                              // Check if the tile at the current position is a wall
         if (Tiles[x, y].Type != TileType.Wall) continue; // Tile isn't a wall, go to the next odd position
-
         GenerateMaze(mazeStartPos); // Start generating the maze from the current position
-        #endregion
       }
     }
   }
@@ -269,12 +267,10 @@ public class LevelGenerator : MonoBehaviour
   void GenerateMaze(Vector2Int startPosition)
   {
     #region Process Start Position
-
     var gridCells = new List<Vector2Int>(); // List to keep track of cells
     StartRegion(); // Start a new region (increment)
     OpenPath(startPosition); // Open the starting cell
     gridCells.Add(startPosition); // Add the starting cell to the list
-
     #endregion
 
     while (gridCells.Count > 0) // While there is still atleast 1 position in the list of GridCells
@@ -284,14 +280,11 @@ public class LevelGenerator : MonoBehaviour
 
       foreach (var direction in GetDirections()) // Check each direction (up, down, left, right)
       {
-        #region Check if Cell is valid in path in the direcetion
-
         // Check if we can open a path in the current direction
         if (IsValidPath(cell, direction) && IsValidPath(cell + direction * 2, direction)) // Check current cell and future cells
         {
           pathCells.Add(direction); // Add the direction to the list of unopened cells
         }
-        #endregion
       }
       if (pathCells.Count > 0) // Theres atleast 1 path position that can be Opened
       {
@@ -352,23 +345,25 @@ public class LevelGenerator : MonoBehaviour
   /// </summary>
   void ConnectRegions()
   {
-    for (int i = 0; i < ConnectorAttempts; i++)
+    for (int i = 0; i < ConnectorAttempts; i++) // For each total attempt to connect regions
     {
-      // Randomly get a region this will become the main region (region to be fully connected)
-      int mainRegion = 0;
+      // This will become the main region (region to be fully connected)
+      int mainRegion = 0; // I just set to the first region (-1 is initalised value)
 
       // Find all connectors (positions that could be valid to connect regions) in the maze
       var connectors = GetConnectorPositions();
 
-      // Create connections using a minimum spanning tree algorithm
+      // Create connections using a minimum spanning tree algorithm 
+      // (I dont think this is actually a min spanning tree) I tried to suss this out further, It boiled my brain
+      // Bob Nystrom mentions that algorithm in his article but i kinda just brute forced this part hence the multiple attempts
       CreateConnections(mainRegion, connectors);
     }
   }
 
   /// <summary>
-  /// Finds and returns all connector positions in the maze.
+  /// Finds and returns all connector positions in the maze 
   /// </summary>
-  /// <returns>List of connector positions.</returns>
+  /// <returns>List of connector positions </returns>
   List<Vector2Int> GetConnectorPositions()
   {
     List<Vector2Int> connectors = new();
@@ -388,17 +383,16 @@ public class LevelGenerator : MonoBehaviour
         if (Tiles[x - 1, y].Type == TileType.Path) region1 = Regions[x - 1, y];
         if (Tiles[x + 1, y].Type == TileType.Path) region2 = Regions[x + 1, y];
 
-        // Check the upper and lower neighboring tiles
-        if (Tiles[x, y - 1].Type == TileType.Path)
+        // Check the above and below neighboring tiles
+        if (Tiles[x, y - 1].Type == TileType.Path) // Below
         {
-          // If region1 is still unassigned, assign it the region ID of the upper neighbor
+          // If region1 is still unassigned, assign it the region ID of the above neighbor
           if (region1 == -1) region1 = Regions[x, y - 1];
 
-          // Otherwise, assign region2 the region ID of the upper neighbor
+          // Otherwise, assign region2 the region ID of the above neighbor
           else if (region2 == -1) region2 = Regions[x, y - 1];
         }
-
-        if (Tiles[x, y + 1].Type == TileType.Path)
+        if (Tiles[x, y + 1].Type == TileType.Path) // Above
         {
           // If region1 is still unassigned, assign it the region ID of the lower neighbor
           if (region1 == -1) region1 = Regions[x, y + 1];
@@ -406,7 +400,6 @@ public class LevelGenerator : MonoBehaviour
           // Otherwise, assign region2 the region ID of the lower neighbor
           else if (region2 == -1) region2 = Regions[x, y + 1];
         }
-
         // If there are exactly two distinct neighboring regions, the tile is a connector
         if (region1 != -1 && region2 != -1 && region1 != region2)
         {
@@ -438,7 +431,7 @@ public class LevelGenerator : MonoBehaviour
 
       openConnectors.Remove(c); // Remove the current connect for the openConnectors list
 
-      int region_1 = Regions[c.x, c.y]; // Region 1 = to Connector.x,y position
+      int region_1 = Regions[c.x, c.y]; // Region 1 = to Connectors x,y position
 
       // Check region 2 to see if the region next to the connector is the same region as Region 1
       int region_2 = Regions[c.x + 1, c.y] == region_1 ? Regions[c.x, c.y + 1] : Regions[c.x + 1, c.y];
@@ -446,7 +439,7 @@ public class LevelGenerator : MonoBehaviour
       // Skip if the regions connected by the connector have both been visited
       if (visitedRegions.Contains(region_1) && visitedRegions.Contains(region_2)) continue;
 
-      OpenConnection(c); // Open the connector to connect the regions
+      OpenConnection(c); // Open the connector to connect the regions (Replace wall with Path)
 
       MergeRegions(region_1, region_2); // Merge the two regions into one region
 
@@ -545,7 +538,6 @@ public class LevelGenerator : MonoBehaviour
     {
       return true;
     }
-
     return false;
   }
 
@@ -565,7 +557,6 @@ public class LevelGenerator : MonoBehaviour
     {
       return true;
     }
-
     return false;
   }
 
@@ -591,7 +582,6 @@ public class LevelGenerator : MonoBehaviour
       if (Tiles[x, y - 1].Type != TileType.Path || Tiles[x, y + 1].Type != TileType.Path)
         return false;
     }
-
     return true; // Both tiles up/down are paths, both tiles to the sides are walls
   }
 
@@ -611,7 +601,6 @@ public class LevelGenerator : MonoBehaviour
     {
       return true;
     }
-
     return false;
   }
 
@@ -650,7 +639,6 @@ public class LevelGenerator : MonoBehaviour
         }
       }
     }
-
   }
 
   /// <summary>
@@ -668,7 +656,6 @@ public class LevelGenerator : MonoBehaviour
         }
       }
     }
-
   }
 
   /// <summary>
