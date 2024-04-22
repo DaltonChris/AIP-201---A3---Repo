@@ -1,29 +1,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 /*
-    Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written in Dart. Hauberk 
-    --- [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
+   Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written in Dart. Hauberk 
+        --- [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 
-    The Game his Prodcedual generation was developed for and that the article refers to [Very cool project] 
-    --- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
+   The Game his Prodcedual generation was developed for and that the article refers to [Very cool project] 
+        --- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
 */
 public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] int GridWidth; // Width of the grid to generate (To be set in the inspector) (Must be odd)
     [SerializeField] int GridHeight; // Width of the grid to generate (To be set in the inspector) (Must be odd)
     [SerializeField] int RoomGenAttempts = 300; // How many times we try to generate a room
-    [SerializeField] int StartRoomSize = 6; // How many times we try to generate a room
+    [SerializeField] int StartRoomSize = 6; // The starting rooms size Length / Width
+
     [SerializeField] Tile[,] Tiles;
     [SerializeField] GameObject TilePreFab; // Prefab for the tile obj
     [SerializeField] GameObject LadderPreFab; // Prefab for the tile obj
     [SerializeField] GameObject CoinPreFab; // Prefab for the coin obj
     [SerializeField] GameObject ChestPreFab; // Prefab for the chest obj
     [SerializeField] GameObject LightPreFab; // Prefab for the light obj
+
+    [SerializeField] GameObject EnemyPreFab;
 
 
     int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region 
@@ -56,11 +58,10 @@ public class LevelGenerator : MonoBehaviour
         AllocateStartArea(StartRoomSize);
 
         yield return new WaitForSeconds(LevelGenDelay);
-        // Populate the grid with mazes in free spaces
-        PopulateGrid_Mazes();
+        PopulateGrid_Mazes(); // Populate the grid with mazes in free spaces
 
         yield return new WaitForSeconds(LevelGenDelay);
-        // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region  - TO DO
+        // Connect Regions - Makes entries (Destroy a wall where the wall has a path to 1 region (up/down || left/right) & 1 To Opposite (Different)Region
         ConnectRegions();
 
         yield return new WaitForSeconds(LevelGenDelay);
@@ -110,7 +111,9 @@ public class LevelGenerator : MonoBehaviour
         Regions = new int[width, height]; // initalise Regions array with width/height.
         #endregion
 
+        #region Start generating
         StartCoroutine(GenerateLevel()); // Start Generate Level coroutine
+        #endregion
     }
 
     /// <summary>
@@ -205,14 +208,16 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="startRoomSize"></param>
     void AllocateStartArea(int startRoomSize)
     {
-        
-        // loop through all grid positions
         StartRegion(); // Start a new region (Increment current region)
-        for (int y = 1; y < startRoomSize; y++) // For each Position in the grids y axis
+        for (int y = 1; y < startRoomSize; y++) // For each Position in the grid starting at 1 on the y axis ending at size of the start room
         {
-            for (int x = 1; x < startRoomSize; x++) // For each Position in the grids X axis
+            for (int x = 1; x < startRoomSize; x++) // For each Position in the grid starting at 1 on the x axis ending at size of the start room
             {
                 #region Create starting Room
                 Tiles[x, y].SetType(TileType.Path); // Set type
@@ -230,8 +235,6 @@ public class LevelGenerator : MonoBehaviour
                                           // Add the room position to the RoomList 
             RoomList.Add(new Vector2Int(x, y));
         }
-
-
     }
 
     /// <summary>
@@ -268,16 +271,18 @@ public class LevelGenerator : MonoBehaviour
         StartRegion(); // Start a new region (increment)
         OpenPath(startPosition); // Open the starting cell
         gridCells.Add(startPosition); // Add the starting cell to the list
+
         #endregion
 
         while (gridCells.Count > 0) // While there is still atleast 1 position in the list of GridCells
         {
             Vector2Int cell = gridCells[gridCells.Count - 1]; // Get the last cell from the list
-            var pathCells = new List<Vector2Int>(); // List to keep track of directions int the path that are not open
+            var pathCells = new List<Vector2Int>(); // List to keep track of directions the path that are not open
 
             foreach (var direction in GetDirections()) // Check each direction (up, down, left, right)
             {
                 #region Check if Cell is valid in path in the direcetion
+
                 // Check if we can open a path in the current direction
                 if (IsValidPath(cell, direction) && IsValidPath(cell + direction * 2, direction)) // Check current cell and future cells
                 {
@@ -288,12 +293,13 @@ public class LevelGenerator : MonoBehaviour
             if (pathCells.Count > 0) // Theres atleast 1 path position that can be Opened
             {
                 #region Open Path Cells & Add Next Cell to Cell list
+
                 // Randomly select a direction from the list of Path Cells
                 Vector2Int direction = pathCells[Random.Range(0, pathCells.Count)];
-
                 OpenPath(cell + direction); // Open the cell in the selected direction
                 OpenPath(cell + direction * 2); // Open the next cell in the same direction
                 gridCells.Add(cell + direction * 2); // Add the next cell to the list
+
                 #endregion
             }
             else gridCells.RemoveAt(gridCells.Count - 1); // Remove the last cell from the list

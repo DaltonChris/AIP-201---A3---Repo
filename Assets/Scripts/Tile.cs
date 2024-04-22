@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour
     [SerializeField] Sprite PathSprite;
     [SerializeField] Sprite GrassSprite;
     SpriteRenderer SpriteRenderer;
+
     public TileType Type { get; internal set; }
 
     private void Awake() // On awake get the SpriteRenderer
