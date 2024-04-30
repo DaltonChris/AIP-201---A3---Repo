@@ -17,3 +17,7 @@
 - Dalton: Procedual level generation
 
 ![Example of Level Gen](https://github.com/DaltonChris/AIP-201---A3---Repo/assets/142439192/c4aa30ad-1ed6-428c-9faa-15419ad3eb1b)
+
+- Kenbe: 2D Physics &OR Collisons
+
+- Stefan: Ai Enemy/Enemies - GOAP / Behaviour trees
