@@ -29,6 +29,7 @@ public class LevelGenerator : MonoBehaviour
   [SerializeField] GameObject ChestPreFab; // Prefab for the chest obj
   [SerializeField] GameObject LightPreFab; // Prefab for the light obj
   [SerializeField] GameObject EnemyPreFab; // Prefab for the enemy
+  [SerializeField] GameObject TreePreFab; // Prefab for A Tree
   int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region
   int CurrentRegion = -1; // Current region's ID (declared at -1, first region to be 0)
   readonly int ConnectorAttempts = 25; // How many times will we try to create region connectors
@@ -70,6 +71,10 @@ public class LevelGenerator : MonoBehaviour
     SpawnCoins(); // Spawn coins / Chests
     yield return new WaitForSeconds(LevelGenDelay);
     SpawnLights(); // Spawn Lights in rooms randomly
+    yield return new WaitForSeconds(LevelGenDelay);
+    SpawnEnemies(); // Spawn Enemies in rooms randomly
+    yield return new WaitForSeconds(LevelGenDelay);
+    SpawnBackgroundItems(); // Spawn Enemies in rooms randomly
 
   }
 
@@ -217,7 +222,7 @@ public class LevelGenerator : MonoBehaviour
   /// A Path 2x the room size is created horizontialy on the x axis (ensure region connection / multiple exits etc.)
   /// </summary>
   /// <param name="startRoomSize"> The size both Height & Width for the room </param>
-  void AllocateStartArea(int startRoomSize)
+  void AllocateStartArea(int startRoomSize) // DONT add to room list (easy way to avoid spawnpoint item/enemy spawns)
   {
     StartRegion(); // Start a new region (Increment current region)
     for (int y = 1; y < startRoomSize; y++) // For each Position in the grid starting at 1 on the y axis ending at size of the start room
@@ -227,7 +232,7 @@ public class LevelGenerator : MonoBehaviour
         Tiles[x, y].SetType(TileType.Path); // Set type
         Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile
                                       // Add the room position to the RoomList
-        RoomList.Add(new Vector2Int(x, y));
+                                      //RoomList.Add(new Vector2Int(x, y));
       }
     }
     for (int x = startRoomSize; x < startRoomSize * 2; x++) // Create a constant path out of the room 
@@ -235,7 +240,7 @@ public class LevelGenerator : MonoBehaviour
       int y = startRoomSize / 2;
       Tiles[x, y].SetType(TileType.Path); // Set type
       Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile                     
-      RoomList.Add(new Vector2Int(x, y)); // Add the room position to the RoomList
+      //RoomList.Add(new Vector2Int(x, y)); // Add the room position to the RoomList
     }
   }
   #endregion
@@ -646,9 +651,9 @@ public class LevelGenerator : MonoBehaviour
   /// </summary>
   void SpawnLadders()
   {
-    for (int y = 1; y < GridHeight - 1; y++)
+    for (int y = 0; y < GridHeight - 1; y++)
     {
-      for (int x = 1; x < GridWidth - 1; x++)
+      for (int x = 0; x < GridWidth - 1; x++)
       {
         if (IsLadderPosition(x, y))
         {
@@ -663,9 +668,9 @@ public class LevelGenerator : MonoBehaviour
   /// </summary>
   void SpawnLights()
   {
-    for (int y = 1; y < GridHeight; y++)
+    for (int y = 0; y < GridHeight; y++)
     {
-      for (int x = 1; x < GridWidth; x++)
+      for (int x = 0; x < GridWidth; x++)
       {
         if (IsWallWithPathBelow(x, y) && IsTileInRoomList(x, y - 1))
         {
@@ -688,7 +693,7 @@ public class LevelGenerator : MonoBehaviour
         {
           if (Random.Range(0, 11) == 0) Instantiate(CoinPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // spawn a coin
 
-          if (IsTileInRoomList(x + 1, y + 1)) // Spawn a chest
+          if (IsTileInRoomList(x, y + 1)) // Spawn a chest
           {
             if (Random.Range(0, 13) == 0) Instantiate(ChestPreFab, new Vector3(x, y + 1, 0), Quaternion.identity);
           }
@@ -697,9 +702,58 @@ public class LevelGenerator : MonoBehaviour
     }
   }
 
+  /// <summary>
+  /// 
+  /// </summary>
   void SpawnEnemies()
   {
     // Do enemy spawning bruh
+    for (int y = 0; y < GridHeight - 1; y++)
+    {
+      for (int x = 0; x < GridWidth - 1; x++)
+      {
+        if (IsGrassTile(x, y) && IsTileInRoomList(x, y + 1)) // can spawn only on grass tiles that are the floors of rooms
+        {
+          if (Tiles[x - 1, y].Type == TileType.Grass || Tiles[x + 1, y].Type == TileType.Grass) // cant spawn on isolated grass tiles must have a grass neighbour
+          {
+            if (Random.Range(0, 6) == 0) // 20% chance of spawning at valid pos
+            {
+              Instantiate(EnemyPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // Instantiate an enemy
+            }
+          }
+        }
+      }
+    }
   }
+
+
+  void SpawnBackgroundItems()
+  {
+    // Tiles is grass And in room:: 
+    //(For loop within the pos at grid from a passed int ie 3x3 can spawn a tree 3x3 or < in size? mayb
+    // Or maybe from valid point halve odd input -1 ie 3 becomes 1 to add on x and check corners ie tiles[x-1,y+3], tiles[x+1,y+3] probs<<<
+    // spwan 1x3 or 3x1
+
+    for (int y = 0; y < GridHeight - 1; y++)
+    {
+      for (int x = 0; x < GridWidth - 1; x++)
+      {
+        if (IsGrassTile(x, y) && IsTileInRoomList(x, y + 1))
+        {
+          if (Tiles[x - 1, y].Type == TileType.Grass && Tiles[x + 1, y].Type == TileType.Grass)
+          {
+            if (Tiles[x - 1, y + 5].Type == TileType.Path && Tiles[x + 1, y + 5].Type == TileType.Path)
+            {
+              if (Random.Range(0, 6) == 0) Instantiate(TreePreFab, new Vector3(x, y + 1, 0), Quaternion.identity);
+              //spawn for size 3x3?
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+
   #endregion
-}
+} // End of Class (stop dyslexia please)

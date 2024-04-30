@@ -195,7 +195,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: bfbb8734bdf62174abc99f444765942d, type: 3}
   m_Color: {r: 0.018641531, g: 0.018563295, b: 0.01886791, a: 0.79607844}
   m_FlipX: 0
@@ -378,8 +378,8 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Color: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+  m_Intensity: 0.75
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -534,7 +534,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -4
+  m_SortingOrder: -6
   m_Sprite: {fileID: 21300000, guid: b5c96dd77b5891947820d80947a60682, type: 3}
   m_Color: {r: 0.018641531, g: 0.018563295, b: 0.01886791, a: 0.79607844}
   m_FlipX: 0
@@ -618,7 +618,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -3
+  m_SortingOrder: -5
   m_Sprite: {fileID: 21300000, guid: cbbac8b724e1c6e4d8dffe8fe8873a67, type: 3}
   m_Color: {r: 0.018641531, g: 0.018563295, b: 0.01886791, a: 0.79607844}
   m_FlipX: 0
@@ -734,7 +734,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingOrder: -4
   m_Sprite: {fileID: 21300000, guid: 814221aefb9fc31499db13d1df6f52ba, type: 3}
   m_Color: {r: 0.018641531, g: 0.018563295, b: 0.01886791, a: 0.79607844}
   m_FlipX: 0
@@ -885,9 +885,17 @@ PrefabInstance:
       value: 61
       objectReference: {fileID: 0}
     - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: TreePreFab
+      value: 
+      objectReference: {fileID: 6015221157692339830, guid: a4802c4189b440048b19d8be294685eb, type: 3}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
       propertyPath: ChestPreFab
       value: 
       objectReference: {fileID: 5371925983560357214, guid: 67469a7a8ddc9884d9a0fb2c557e842d, type: 3}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: EnemyPreFab
+      value: 
+      objectReference: {fileID: 6029902021076978789, guid: 9393296475de0d944b7b8b9961014371, type: 3}
     - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
       propertyPath: LightPreFab
       value: 
