@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 /* Dalton Christopher
@@ -30,11 +31,14 @@ public class LevelGenerator : MonoBehaviour
   [SerializeField] GameObject LightPreFab; // Prefab for the light obj
   [SerializeField] GameObject EnemyPreFab; // Prefab for the enemy
   [SerializeField] GameObject TreePreFab; // Prefab for A Tree
+  [SerializeField] GameObject TreePreFab_2; // Prefab for A Tree
+  [SerializeField] GameObject LargeTreePrefab; // Prefab for A Tree
   int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region
   int CurrentRegion = -1; // Current region's ID (declared at -1, first region to be 0)
   readonly int ConnectorAttempts = 25; // How many times will we try to create region connectors
   readonly float LevelGenDelay = 0.75f; // The delay inbetween each generation action (To better visualise while developing)
   readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
+  List<Room> Rooms = new(); // A dictionary of all rooms in the level
 
   #region Wait for SpaceBar before generating
   void Update()
@@ -198,7 +202,14 @@ public class LevelGenerator : MonoBehaviour
       Debug.Log($"Room being added @ - X: {x} Y: {y} Size: Width: {width} Height: {height}");
 
       #region Add the room to the grid
+
       StartRegion(); // Start a new region (Increment current region)
+
+
+
+      Vector2Int startPos = new Vector2Int(x, y);
+      Rooms.Add(new Room(startPos, width, height)); // Add the room to the RoomList
+
 
       // loop through grid positions (starting at the randomise x,y position)
       for (int yy = y; yy < y + height; yy++) // For each Position in the grids y axis from start pos -> to start pos + height (room height)
@@ -222,7 +233,7 @@ public class LevelGenerator : MonoBehaviour
   /// A Path 2x the room size is created horizontialy on the x axis (ensure region connection / multiple exits etc.)
   /// </summary>
   /// <param name="startRoomSize"> The size both Height & Width for the room </param>
-  void AllocateStartArea(int startRoomSize) // DONT add to room list (easy way to avoid spawnpoint item/enemy spawns)
+  void AllocateStartArea(int startRoomSize) // Mayb--DONT add to room list (easy way to avoid spawnpoint item/enemy spawns)
   {
     StartRegion(); // Start a new region (Increment current region)
     for (int y = 1; y < startRoomSize; y++) // For each Position in the grid starting at 1 on the y axis ending at size of the start room
@@ -232,7 +243,7 @@ public class LevelGenerator : MonoBehaviour
         Tiles[x, y].SetType(TileType.Path); // Set type
         Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile
                                       // Add the room position to the RoomList
-                                      //RoomList.Add(new Vector2Int(x, y));
+        RoomList.Add(new Vector2Int(x, y));
       }
     }
     for (int x = startRoomSize; x < startRoomSize * 2; x++) // Create a constant path out of the room 
@@ -240,7 +251,7 @@ public class LevelGenerator : MonoBehaviour
       int y = startRoomSize / 2;
       Tiles[x, y].SetType(TileType.Path); // Set type
       Regions[x, y] = CurrentRegion;// Update the Regions array with the new region information the room tile                     
-      //RoomList.Add(new Vector2Int(x, y)); // Add the room position to the RoomList
+      RoomList.Add(new Vector2Int(x, y)); // Add the room position to the RoomList
     }
   }
   #endregion
@@ -729,31 +740,86 @@ public class LevelGenerator : MonoBehaviour
 
   void SpawnBackgroundItems()
   {
-    // Tiles is grass And in room:: 
-    //(For loop within the pos at grid from a passed int ie 3x3 can spawn a tree 3x3 or < in size? mayb
-    // Or maybe from valid point halve odd input -1 ie 3 becomes 1 to add on x and check corners ie tiles[x-1,y+3], tiles[x+1,y+3] probs<<<
-    // spwan 1x3 or 3x1
-
-    for (int y = 0; y < GridHeight - 1; y++)
+    foreach (Room room in Rooms)
     {
-      for (int x = 0; x < GridWidth - 1; x++)
+      List<Vector2Int> possibleItemPositions = GetPossibleItemPositions(room);
+      List<Vector2Int> currentItemPositions = possibleItemPositions;
+
+      currentItemPositions.Remove(new Vector2Int(room.EntryPos.x + 1, room.EntryPos.y));
+      currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y));
+      currentItemPositions.Remove(new Vector2Int(room.StartPos.x, room.StartPos.y));
+      currentItemPositions.Remove(new Vector2Int(room.StartPos.x + room.Width - 1, room.StartPos.y));
+      int LargeTreeAttempts = 3;
+      int SmallTreeAttempts = 5;
+
+      while (currentItemPositions.Count > 0)
       {
-        if (IsGrassTile(x, y) && IsTileInRoomList(x, y + 1))
+
+        Vector2Int randomSpawn;
+        while (LargeTreeAttempts > 0 && room.Height >= 5)
         {
-          if (Tiles[x - 1, y].Type == TileType.Grass && Tiles[x + 1, y].Type == TileType.Grass)
+          if (currentItemPositions.Count > 0)
           {
-            if (Tiles[x - 1, y + 5].Type == TileType.Path && Tiles[x + 1, y + 5].Type == TileType.Path)
+            randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
+            if (randomSpawn.x > room.StartPos.x + 2 && randomSpawn.x < room.StartPos.x + room.Width - 2) // Big trees can spawn
             {
-              if (Random.Range(0, 6) == 0) Instantiate(TreePreFab, new Vector3(x, y + 1, 0), Quaternion.identity);
-              //spawn for size 3x3?
+
+              Instantiate(LargeTreePrefab, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
             }
+            currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x -= 3; currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x--; currentItemPositions.Remove(randomSpawn);
+
           }
+          LargeTreeAttempts--;
+        }
+        while (SmallTreeAttempts > 0 && room.Height >= 3) // normal trees can spawn
+        {
+
+          if (currentItemPositions.Count > 0)
+          {
+            randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
+            if (Random.Range(0, 2) == 0)
+            {
+              Instantiate(TreePreFab, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
+            }
+            else
+            {
+              Instantiate(TreePreFab_2, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
+            }
+
+            currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
+            randomSpawn.x -= 2; currentItemPositions.Remove(randomSpawn);
+          }
+          SmallTreeAttempts--;
         }
       }
-
     }
   }
+  List<Vector2Int> GetPossibleItemPositions(Room room)
+  {
+    List<Vector2Int> possibleItemPositions = new List<Vector2Int>();
+    int x = room.StartPos.x;
+    int y = room.StartPos.y;
 
+    for (int xx = x; xx < x + room.Width; xx++)
+    {
+      if (Tiles[xx, y - 1].Type != TileType.Path)
+      {
+        possibleItemPositions.Add(new Vector2Int(xx, y));
+      }
+      if (Tiles[xx, y - 1].Type == TileType.Path)
+      {
+        room.EntryPos = new Vector2Int(xx, y);
+      }
+    }
+    possibleItemPositions.Remove(room.EntryPos);
+    return possibleItemPositions;
+  }
 
   #endregion
 } // End of Class (stop dyslexia please)
+

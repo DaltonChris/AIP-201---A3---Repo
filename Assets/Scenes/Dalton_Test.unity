@@ -901,9 +901,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5881052863996258071, guid: a7b2063b9072a2440bd121d909973556, type: 3}
     - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: TreePreFab2
+      value: 
+      objectReference: {fileID: 6015221157692339830, guid: 89bba8f0264153648bae6ff1aa748478, type: 3}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
       propertyPath: LadderPreFab
       value: 
       objectReference: {fileID: 1410569259387571614, guid: 76dfa432b1183a24a9cc5f151999784e, type: 3}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: TreePreFab_2
+      value: 
+      objectReference: {fileID: 6015221157692339830, guid: 7aa8a8a08fd7cda4cb9f15cebf035c58, type: 3}
+    - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
+      propertyPath: LargeTreePrefab
+      value: 
+      objectReference: {fileID: 6015221157692339830, guid: 89bba8f0264153648bae6ff1aa748478, type: 3}
     - target: {fileID: 5503554317207573978, guid: 5f05cdb4edffd044892587316a522568, type: 3}
       propertyPath: RoomGenAttempts
       value: 2000

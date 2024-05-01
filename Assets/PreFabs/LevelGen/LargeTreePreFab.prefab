@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3709177807049223247}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.95, z: 0}
+  m_LocalPosition: {x: 0.25, y: 1.9, z: 0}
   m_LocalScale: {x: 0.95, y: 0.95, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,9 +73,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 2e68925f105f212468dce85fc81b32bd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd39d30947629674db3d6ab8d6ad510e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 3.25, y: 4.21875}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3051134752059585645}
   m_Layer: 0
-  m_Name: TreePreFab
+  m_Name: LargeTreePreFab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
