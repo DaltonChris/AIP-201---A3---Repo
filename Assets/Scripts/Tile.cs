@@ -37,10 +37,11 @@ public class Tile : MonoBehaviour
             case TileType.Wall: // Case wall Type, Set Wall Sprite
                 SpriteRenderer.sprite = WallSprite;
                 SpriteRenderer.sortingOrder = 0;
+                SpriteRenderer.sortingLayerName = "Walls";
                 break;
             case TileType.Path: // Case Path Type, Set Wall Sprite
                 SpriteRenderer.sprite = PathSprite;
-                SpriteRenderer.sortingOrder = -2;
+                SpriteRenderer.sortingOrder = -10;
                 break;
             case TileType.Grass: // Case Grass Type, Set Grass Sprite
                 SpriteRenderer.sprite = GrassSprite;

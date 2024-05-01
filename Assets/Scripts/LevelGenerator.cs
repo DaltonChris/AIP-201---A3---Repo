@@ -691,7 +691,7 @@ public class LevelGenerator : MonoBehaviour
       {
         if (IsWallWithPathBelow(x, y) && IsTileInRoomList(x, y - 1))
         {
-          if (Random.Range(0, 11) == 0) Instantiate(LightPreFab, new Vector3(x, y, 0), Quaternion.identity);
+          if (Random.Range(0, 4) == 0) Instantiate(LightPreFab, new Vector3(x, y, 0), Quaternion.identity);
         }
       }
     }
@@ -708,7 +708,7 @@ public class LevelGenerator : MonoBehaviour
       {
         if (IsGrassTile(x, y))
         {
-          if (Random.Range(0, 11) == 0) Instantiate(CoinPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // spawn a coin
+          if (Random.Range(0, 10) == 0) Instantiate(CoinPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // spawn a coin
 
           if (IsTileInRoomList(x, y + 1)) // Spawn a chest
           {
@@ -836,6 +836,7 @@ public class LevelGenerator : MonoBehaviour
     foreach (Vector2Int pos in possibleBushPositions)
     {
       int randomBush = Random.Range(0, BushPrefabs.Count);
+      if (Tiles[pos.x + 1, pos.y].Type != TileType.Grass) continue;
       Instantiate(BushPrefabs[randomBush], new Vector3(pos.x, pos.y, 0), Quaternion.identity);
     }
   }
