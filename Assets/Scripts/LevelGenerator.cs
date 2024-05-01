@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
 /* Dalton Christopher
    04/2024
    TUA - AIP-201
@@ -86,7 +87,7 @@ public class LevelGenerator : MonoBehaviour
     yield return new WaitForSeconds(LevelGenDelay);
     SpawnBushes(); // Spawn Enemies in rooms randomly
     yield return new WaitForSeconds(LevelGenDelay);
-    FixStartRoomLadder();
+    FixStartRoomLadder(); // Fix the start room ladder (add ladders if entry opens in top corner of start-Room)
   }
 
   /// <summary>
