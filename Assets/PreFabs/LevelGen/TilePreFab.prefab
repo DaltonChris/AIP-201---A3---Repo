@@ -73,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: -2
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -97,6 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f48918289c0f3f54a9933c8e91320b1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WallSprite: {fileID: 21300000, guid: 5b638954756dfa04c935162752108dae, type: 3}
-  PathSprite: {fileID: 21300000, guid: 64f068d7777cc764baf8fe940fb03f4c, type: 3}
-  GrassSprite: {fileID: 21300000, guid: 14f943eb6f6ad474bacfa355595bd5ed, type: 3}
+  WallSprite: {fileID: 21300000, guid: b9e148b4a0608514893d11a124c3429a, type: 3}
+  PathSprite: {fileID: 21300000, guid: 261a38a2bdb857b4f9c7e5349685d4fe, type: 3}
+  GrassSprite: {fileID: 21300000, guid: f7b977feed9184749becb8ed20206c3c, type: 3}

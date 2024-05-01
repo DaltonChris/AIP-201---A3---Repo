@@ -14,6 +14,7 @@ public class Tile : MonoBehaviour
     [SerializeField] Sprite PathSprite;
     [SerializeField] Sprite GrassSprite;
     SpriteRenderer SpriteRenderer;
+
     public TileType Type { get; internal set; }
 
     private void Awake() // On awake get the SpriteRenderer
@@ -35,12 +36,16 @@ public class Tile : MonoBehaviour
         {
             case TileType.Wall: // Case wall Type, Set Wall Sprite
                 SpriteRenderer.sprite = WallSprite;
+                SpriteRenderer.sortingOrder = 0;
+                SpriteRenderer.sortingLayerName = "Walls";
                 break;
             case TileType.Path: // Case Path Type, Set Wall Sprite
                 SpriteRenderer.sprite = PathSprite;
+                SpriteRenderer.sortingOrder = -10;
                 break;
             case TileType.Grass: // Case Grass Type, Set Grass Sprite
                 SpriteRenderer.sprite = GrassSprite;
+                SpriteRenderer.sortingOrder = 0;
                 break;
             default:
                 break;

@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TestPlayer : MonoBehaviour
 {
     public float speed = 5f;
-
     public Camera PlayCamera;
     public Camera GridCamera;
 
