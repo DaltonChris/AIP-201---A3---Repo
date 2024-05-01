@@ -22,6 +22,8 @@ public class LevelGenerator : MonoBehaviour
   [SerializeField] int GridWidth; // Width of the grid to generate (To be set in the inspector) (Must be odd)
   [SerializeField] int GridHeight; // Width of the grid to generate (To be set in the inspector) (Must be odd)
   [SerializeField] int RoomGenAttempts = 300; // How many times we try to generate a room
+  [SerializeField] int RoomSizeExtention = 6; // How many times we try to generate a room
+  [SerializeField] int RoomExtentionRate = 8; // The maximum rooms size Length / Width
   [SerializeField] int StartRoomSize = 6; // The starting rooms size Length / Width
   [SerializeField] Tile[,] Tiles; // 2D Array of tile Obj's (Level's Grid)
   [SerializeField] GameObject TilePreFab; // Prefab for the tile obj
@@ -33,10 +35,11 @@ public class LevelGenerator : MonoBehaviour
   [SerializeField] GameObject TreePreFab; // Prefab for A Tree
   [SerializeField] GameObject TreePreFab_2; // Prefab for A Tree
   [SerializeField] GameObject LargeTreePrefab; // Prefab for A Tree
+  [SerializeField] List<GameObject> BushPrefabs; // Prefab for A Tree
   int[,] Regions; // An array of int's for each pos in the grid each int represents a different Region
   int CurrentRegion = -1; // Current region's ID (declared at -1, first region to be 0)
   readonly int ConnectorAttempts = 25; // How many times will we try to create region connectors
-  readonly float LevelGenDelay = 0.75f; // The delay inbetween each generation action (To better visualise while developing)
+  readonly float LevelGenDelay = 0.5f; // The delay inbetween each generation action (To better visualise while developing)
   readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
   List<Room> Rooms = new(); // A dictionary of all rooms in the level
 
@@ -79,6 +82,8 @@ public class LevelGenerator : MonoBehaviour
     SpawnEnemies(); // Spawn Enemies in rooms randomly
     yield return new WaitForSeconds(LevelGenDelay);
     SpawnBackgroundItems(); // Spawn Enemies in rooms randomly
+    yield return new WaitForSeconds(LevelGenDelay);
+    SpawnBushes(); // Spawn Enemies in rooms randomly
 
   }
 
@@ -159,12 +164,13 @@ public class LevelGenerator : MonoBehaviour
     for (int i = 0; i < RoomGenAttempts; i++)
     {
       #region Randomise Room Size / Position
-      int size = Random.Range(2, 5) * 2 + 1; // Random range between 3,5 Multiplied by 2 + 1 to keep rooms odd
+      int size = Random.Range(3, 5) * 2 + 1; // Random range between 3,5 Multiplied by 2 + 1 to keep rooms odd
       int width = size; // declare width int set to size
       int height = size / 2; // declare height int set to half size
 
       // Randomly int the width 33~% chance
-      if (Random.Range(0, 3) == 0) width *= 2; height++; // If is 0, double width
+      if (Random.Range(0, 3) == 0) width *= 3;// If is 0, tripple width
+      if (Random.Range(0, RoomExtentionRate) == 0) width += RoomSizeExtention; height++; // Roll extra expansion rate chance set in insepcector
       if (height % 2 == 0) height++; // If height isn't odd Increment height  [Ensure they are odd]
       if (width % 2 == 0) width--; // If width isn't odd Increment height  [Ensure they are odd]
 
@@ -737,7 +743,9 @@ public class LevelGenerator : MonoBehaviour
     }
   }
 
-
+  /// <summary>
+  /// 
+  /// </summary>
   void SpawnBackgroundItems()
   {
     foreach (Room room in Rooms)
@@ -746,11 +754,11 @@ public class LevelGenerator : MonoBehaviour
       List<Vector2Int> currentItemPositions = possibleItemPositions;
 
       currentItemPositions.Remove(new Vector2Int(room.EntryPos.x + 1, room.EntryPos.y));
-      currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y));
+      //currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y));
       currentItemPositions.Remove(new Vector2Int(room.StartPos.x, room.StartPos.y));
       currentItemPositions.Remove(new Vector2Int(room.StartPos.x + room.Width - 1, room.StartPos.y));
       int LargeTreeAttempts = 3;
-      int SmallTreeAttempts = 5;
+      int SmallTreeAttempts = 20;
 
       while (currentItemPositions.Count > 0)
       {
@@ -763,7 +771,6 @@ public class LevelGenerator : MonoBehaviour
             randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
             if (randomSpawn.x > room.StartPos.x + 2 && randomSpawn.x < room.StartPos.x + room.Width - 2) // Big trees can spawn
             {
-
               Instantiate(LargeTreePrefab, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
             }
             currentItemPositions.Remove(randomSpawn);
@@ -771,25 +778,19 @@ public class LevelGenerator : MonoBehaviour
             randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
             randomSpawn.x -= 3; currentItemPositions.Remove(randomSpawn);
             randomSpawn.x--; currentItemPositions.Remove(randomSpawn);
-
           }
           LargeTreeAttempts--;
         }
-        while (SmallTreeAttempts > 0 && room.Height >= 3) // normal trees can spawn
+        for (int i = 0; i < SmallTreeAttempts; i++) // normal trees can spawn
         {
-
-          if (currentItemPositions.Count > 0)
+          if (currentItemPositions.Count > 0 && room.Height >= 3)
           {
             randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
             if (Random.Range(0, 2) == 0)
             {
               Instantiate(TreePreFab, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
             }
-            else
-            {
-              Instantiate(TreePreFab_2, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
-            }
-
+            else Instantiate(TreePreFab_2, new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
             currentItemPositions.Remove(randomSpawn);
             randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
             randomSpawn.x -= 2; currentItemPositions.Remove(randomSpawn);
@@ -797,8 +798,17 @@ public class LevelGenerator : MonoBehaviour
           SmallTreeAttempts--;
         }
       }
+      currentItemPositions = possibleItemPositions; // Reset current Item
+
+      // Spawn Other room items....
+
     }
   }
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="room"></param>
+  /// <returns></returns>
   List<Vector2Int> GetPossibleItemPositions(Room room)
   {
     List<Vector2Int> possibleItemPositions = new List<Vector2Int>();
@@ -820,6 +830,36 @@ public class LevelGenerator : MonoBehaviour
     return possibleItemPositions;
   }
 
+  void SpawnBushes()
+  {
+    List<Vector2Int> possibleBushPositions = GetPossibleBushPositions();
+    foreach (Vector2Int pos in possibleBushPositions)
+    {
+      int randomBush = Random.Range(0, BushPrefabs.Count);
+      Instantiate(BushPrefabs[randomBush], new Vector3(pos.x, pos.y, 0), Quaternion.identity);
+    }
+  }
+  List<Vector2Int> GetPossibleBushPositions()
+  {
+    List<Vector2Int> possibleBushPositions = new List<Vector2Int>();
+    for (int x = 0; x < GridWidth; x++)
+    {
+      for (int y = 0; y < GridHeight; y++)
+      {
+        if (IsGrassTile(x, y))
+        {
+          possibleBushPositions.Add(new Vector2Int(x, y));
+        }
+      }
+    }
+    return possibleBushPositions;
+  }
+
+
   #endregion
+
+
+
+
 } // End of Class (stop dyslexia please)
 
