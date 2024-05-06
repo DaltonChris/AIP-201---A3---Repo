@@ -687,15 +687,17 @@ public class LevelGenerator : MonoBehaviour
       }
     }
   }
-
+  /// <summary>
+  /// 
+  /// </summary>
   void FixStartRoomLadder()
   {
-    Vector2Int startRoomLadderCheck = new Vector2Int(1, 1 + StartRoomSize / 2);
-    if (LadderPositions.Contains(startRoomLadderCheck))
+    Vector2Int startRoomLadderCheck = new Vector2Int(1, 1 + StartRoomSize / 2); // The position of the (possible) entry tile in the start room
+    if (LadderPositions.Contains(startRoomLadderCheck)) // Check if that possition is contained in the list of ladder positions (set when ladders are spawned)
     {
-      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity);
-      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity);
-      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity);
+      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity); // if so add ladder below
+      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity); // add another ladder below
+      Instantiate(LadderPreFabs[Random.Range(0, LadderPreFabs.Length)], new Vector3(startRoomLadderCheck.x, startRoomLadderCheck.y--, 0), Quaternion.identity); // and again
     }
 
   }

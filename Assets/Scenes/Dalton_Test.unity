@@ -754,33 +754,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 751458036769521914, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_RenderPostProcessing
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 751458036769521914, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_VolumeFrameworkUpdateModeOption
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132979429840730726, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_Color.a
-      value: 0.05882353
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132979429840730726, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_Color.b
-      value: 0.18867922
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132979429840730726, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_Color.g
-      value: 0.18867922
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132979429840730726, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_Color.r
-      value: 0.18867922
-      objectReference: {fileID: 0}
     - target: {fileID: 4275247988758615870, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 1.51
       objectReference: {fileID: 0}
     - target: {fileID: 4275247988758615870, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -818,37 +794,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: orthographic size
-      value: 6.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_BackGroundColor.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_BackGroundColor.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_BackGroundColor.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5455570357797668981, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: m_BackGroundColor.r
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7056523018327510525, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
       propertyPath: m_Name
       value: Circle_Dude
-      objectReference: {fileID: 0}
-    - target: {fileID: 8501429722581797273, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
-      propertyPath: speed
-      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8501429722581797273, guid: 2aee3ce7c4de87045baf48e5c444b9e9, type: 3}
       propertyPath: GridCamera
