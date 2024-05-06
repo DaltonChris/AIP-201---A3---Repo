@@ -780,59 +780,83 @@ public class LevelGenerator : MonoBehaviour
   {
     foreach (Room room in Rooms)
     {
+      // get all the possible positions for items in the current room
       List<Vector2Int> possibleItemPositions = GetPossibleItemPositions(room);
-      List<Vector2Int> currentItemPositions = possibleItemPositions;
+      List<Vector2Int> currentPossibleItemPos = possibleItemPositions; // duplicate the list (redundat atm see end of method)
 
-      currentItemPositions.Remove(new Vector2Int(room.EntryPos.x + 1, room.EntryPos.y));
+      // Remove the entry position for the room (this is where a ladder is, (only for the bottom of rooms))
+      currentPossibleItemPos.Remove(new Vector2Int(room.EntryPos.x + 1, room.EntryPos.y));
       //currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y));
-      currentItemPositions.Remove(new Vector2Int(room.StartPos.x, room.StartPos.y));
-      currentItemPositions.Remove(new Vector2Int(room.StartPos.x + room.Width - 1, room.StartPos.y));
-      int LargeTreeAttempts = 4;
-      int SmallTreeAttempts = 20;
 
-      while (currentItemPositions.Count > 0)
+      // Remove the rooms start positon from the possible item positons 
+      currentPossibleItemPos.Remove(new Vector2Int(room.StartPos.x, room.StartPos.y)); //(bottom left corner)
+      // Remove the bottom right hand corner of the room also (width-1 for startpos < start +width)
+      currentPossibleItemPos.Remove(new Vector2Int(room.StartPos.x + room.Width - 1, room.StartPos.y));
+
+      int LargeTreeAttempts = 4; // the amount of times to try and place a large tree in each room
+      int SmallTreeAttempts = 20; // the amount of times to try and place a small tree in each room
+
+      // While there is still atleast 1 possible positon for items
+      while (currentPossibleItemPos.Count > 0)
       {
+        Vector2Int randomSpawn; // declare and empty vector 2 to hold the randomly chosen position from the list
 
-        Vector2Int randomSpawn;
+        // while the rooms height is => 5 and theres more than 0 large tree spawn attempts
         while (LargeTreeAttempts > 0 && room.Height >= 5)
         {
-          if (currentItemPositions.Count > 0)
+          if (currentPossibleItemPos.Count > 0) // check again there are still atleast 1 possible positon for items (had to add this)
           {
-            randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
-            if (randomSpawn.x > room.StartPos.x + 2 && randomSpawn.x < room.StartPos.x + room.Width - 2) // Big trees can spawn
-            {
-              Instantiate(LargeTreePrefabs[Random.Range(0, LargeTreePrefabs.Length)],
-                new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
+            // pick a random position from the possible positions
+            randomSpawn = currentPossibleItemPos[Random.Range(0, currentPossibleItemPos.Count)];
 
-              currentItemPositions.Remove(randomSpawn);
-              randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
-              randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
-              randomSpawn.x -= 3; currentItemPositions.Remove(randomSpawn);
-              randomSpawn.x--; currentItemPositions.Remove(randomSpawn);
+            // if the x value for the possible pos is > the rooms startpos's x axis-value + 2 IE at least the 4th tile in the room
+            // & if the x value is < the rooms-startPos + width - 2 (max the 3rd to last tile. [the treePrefabs are offset slightly])
+            if (randomSpawn.x > room.StartPos.x + 2 && randomSpawn.x < room.StartPos.x + room.Width - 2) // then.. Big trees can spawn
+            {
+              Instantiate(LargeTreePrefabs[Random.Range(0, LargeTreePrefabs.Length)], // pick a random tree from the largetree array 
+                new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity); // Spawn it at the randomly allocated positon above
+
+              // Basically remove the tile of the tree and the two neighbouring tiles both left/right 
+              // (they might not be in the list) but this ensures minimal tree overlap and keeps trees looking coherent
+              currentPossibleItemPos.Remove(randomSpawn); // Remove the spawned trees postion from the current possible positons
+              randomSpawn.x++; currentPossibleItemPos.Remove(randomSpawn); // remove the position one tile to the right
+              randomSpawn.x++; currentPossibleItemPos.Remove(randomSpawn); // remove the position one more tile to the right
+              randomSpawn.x -= 3; currentPossibleItemPos.Remove(randomSpawn); // remove the possition one tile to the left of the tree
+              randomSpawn.x--; currentPossibleItemPos.Remove(randomSpawn);// remove the possition one more tile to the left
             }
           }
-          LargeTreeAttempts--;
+          LargeTreeAttempts--; // big tree attempt is over lower attempts
         }
+
+
         for (int i = 0; i < SmallTreeAttempts; i++) // normal trees can spawn
         {
-          if (currentItemPositions.Count > 0 && room.Height >= 3)
+          if (currentPossibleItemPos.Count > 0 && room.Height >= 3) // if there is atleast 1 possible postion and the height is atleast 3
           {
-            randomSpawn = currentItemPositions[Random.Range(0, currentItemPositions.Count)];
+            randomSpawn = currentPossibleItemPos[Random.Range(0, currentPossibleItemPos.Count)];
 
             Instantiate(DeadTreePreFabs[Random.Range(0, DeadTreePreFabs.Length)],
               new Vector3(randomSpawn.x, randomSpawn.y, 0), Quaternion.identity);
 
-            currentItemPositions.Remove(randomSpawn);
-            randomSpawn.x++; currentItemPositions.Remove(randomSpawn);
-            randomSpawn.x -= 2; currentItemPositions.Remove(randomSpawn);
+            currentPossibleItemPos.Remove(randomSpawn);
+            randomSpawn.x++; currentPossibleItemPos.Remove(randomSpawn);
+            randomSpawn.x -= 2; currentPossibleItemPos.Remove(randomSpawn);
           }
-          SmallTreeAttempts--;
+          SmallTreeAttempts--; // attempt is over lower attempts
         }
       }
-      currentItemPositions = possibleItemPositions; // Reset current Item
+      // Reset current Items 
+      currentPossibleItemPos = possibleItemPositions;
+      // (possible positions are removed as each type is added or cannot be added)
+      // reseting allows all possible positions to be reset for futher items with thier own
+      // spawn rules / checks to be made
+
+      // Currently "possibleItemPositions" should be used and "currentPossibleItemPos" could be removed because
+      // Im not spawning further background items within the rooms (I was planning to), which makes the secound list redundant 
+      // though im going to leave this As ill likely play around with this class again for other projects :)
+
 
       // Spawn Other room items....
-
     }
   }
   /// <summary>
@@ -852,38 +876,52 @@ public class LevelGenerator : MonoBehaviour
       {
         possibleItemPositions.Add(new Vector2Int(xx, y));
       }
-      if (Tiles[xx, y - 1].Type == TileType.Path)
+      if (Tiles[xx, y - 1].Type == TileType.Path) // if the tile below 1 on the y axis is type path
       {
-        room.EntryPos = new Vector2Int(xx, y);
+        room.EntryPos = new Vector2Int(xx, y); // the tile is a entry position, update the room object
       }
     }
     possibleItemPositions.Remove(room.EntryPos);
     return possibleItemPositions;
   }
+
+  /// <summary>
+  /// Spawns bushes on the game level.
+  /// </summary>
+  /// <remarks>
+  /// This method generates a list of possible bush positions on the game level using the GetPossibleBushPositions() method.
+  /// It then iterates through each possible position and checks if the tile to the right of the position is of type Grass.
+  /// If it is, a random bush prefab is instantiated at the position with a rotation of 0.
+  /// </remarks>
   void SpawnBushes()
   {
-    List<Vector2Int> possibleBushPositions = GetPossibleBushPositions();
+    List<Vector2Int> possibleBushPositions = GetAllGrassPositions();
     foreach (Vector2Int pos in possibleBushPositions)
     {
-      int randomBush = Random.Range(0, BushPrefabs.Length);
-      if (Tiles[pos.x + 1, pos.y].Type != TileType.Grass) continue;
-      Instantiate(BushPrefabs[randomBush], new Vector3(pos.x, pos.y, 0), Quaternion.identity);
+      int randomBush = Random.Range(0, BushPrefabs.Length); // pick a random Bush from the BushPreFabs array
+      if (Tiles[pos.x + 1, pos.y].Type != TileType.Grass) continue; // if the tiles to the right isnt a grass tile (path/wall) skip this tile
+      Instantiate(BushPrefabs[randomBush], new Vector3(pos.x, pos.y, 0), Quaternion.identity); // Spawn the randomly selected bush at the pos
     }
   }
-  List<Vector2Int> GetPossibleBushPositions()
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <returns></returns>
+  List<Vector2Int> GetAllGrassPositions()
   {
-    List<Vector2Int> possibleBushPositions = new List<Vector2Int>();
-    for (int x = 0; x < GridWidth; x++)
+    List<Vector2Int> grassTilePositions = new(); // Declare a list to holdthe possible positions
+    for (int x = 0; x < GridWidth; x++) // for each tile in the grid (x axis)
     {
-      for (int y = 0; y < GridHeight; y++)
+      for (int y = 0; y < GridHeight; y++) // for each tile in the grid (y axis)
       {
-        if (IsGrassTile(x, y))
+        if (IsGrassTile(x, y)) // check if the tile is a grass tile
         {
-          possibleBushPositions.Add(new Vector2Int(x, y));
+          grassTilePositions.Add(new Vector2Int(x, y)); // if it is a grass tile add the posotion to the list
         }
       }
     }
-    return possibleBushPositions;
+    return grassTilePositions; // return the list of tile positions
   }
 
 
