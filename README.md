@@ -24,8 +24,9 @@
 
 ![Example of Level Gen](https://github.com/DaltonChris/AIP-201---A3---Repo/assets/142439192/c4aa30ad-1ed6-428c-9faa-15419ad3eb1b)
 
-## Kenbe: 2D Physics &OR Collisons
-- SAT (Separating Axis Theorem) || Custon collisons (Octogans, Odd-Shapes) etc.
-
-## Stefan: Ai Enemy/Enemies - GOAP / Behaviour trees
+## Kenbe: Ai Enemy/Enemies - GOAP / Behaviour trees
 - GOAP-Goal Oriented Action Planning || Behaviour tree based Ai
+-- Statebased, idle, patrol, chase, attack, retreat, die.
+
+## Stefan: 2D Physics &OR Collisons
+- SAT (Separating Axis Theorem) || Custon collisons (Octogans, Odd-Shapes) etc.
