@@ -8,6 +8,8 @@ public class SquarePath : MonoBehaviour
     public float enemy_speed;
     public GameObject[] pathPoints;
 
+    public SpriteRenderer spriteRenderer;
+
     int next_pathpoint = 1;
     float distanceToNextPoint;
     float minDistance = 0.2f;
@@ -45,7 +47,15 @@ public class SquarePath : MonoBehaviour
         {
             next_pathpoint = 0;
         }
+        if (next_pathpoint == 3) // if we get to the 3rd position we are upside down
+        {
+            spriteRenderer.flipY = true; // flip the enemies sprite
+        }
+        else // else we are not upside down
+        {
+            spriteRenderer.flipY = false; // dont flip the y axis 
 
-        Debug.Log("Next Path Point: " + next_pathpoint);
+            Debug.Log("Next Path Point: " + next_pathpoint);
+        }
     }
 }
