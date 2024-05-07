@@ -572,6 +572,7 @@ GameObject:
   - component: {fileID: 1361510199}
   - component: {fileID: 1361510198}
   - component: {fileID: 1361510200}
+  - component: {fileID: 1361510201}
   m_Layer: 0
   m_Name: Eyeball
   m_TagString: Untagged
@@ -589,7 +590,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 6.6, y: -1.46, z: 0.11754922}
-  m_LocalScale: {x: 1.820209, y: 1.690527, z: 0.98113894}
+  m_LocalScale: {x: 2, y: 2, z: 1.1607492}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1062978300}
@@ -700,6 +701,27 @@ MonoBehaviour:
   bullet: {fileID: 1330903699174062891, guid: 9fe78b0cb14f4204db9b28a960f4768b, type: 3}
   bullet_Parent: {fileID: 1062978299}
   numberOfBullets: 2
+--- !u!95 &1361510201
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361510192}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1ed3e70c32d7dac45bb6b2c91cbf076c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1364914430
 GameObject:
   m_ObjectHideFlags: 0
