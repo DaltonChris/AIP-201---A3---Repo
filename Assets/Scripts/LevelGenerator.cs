@@ -21,7 +21,7 @@ using Random = UnityEngine.Random;
   #   of implementing a room/maze generation algorithm, helped me greatly. After playing with recursive mazes i found his jounal post
   #   the emphasis put on an odd sized grid to ensure viable room and maze spacing, and displaying step by step changes helped in
   #   grasping the topic. 
-  #   -- Bob's generation involed a top down terminal style generation (at the time, now it has cool pixal art and what not)
+  #           -- Bob's generation involed a top down terminal style generation (at the time, now it has cool pixal art and what not)
   #  
   #    While i heavily relied on his explantion (and still struggled) I worked my own ideas and solutions to have a viable functioning 
   #    system,writing the C# myself with Unity's qwuirks and work out ways to manage and trouble shoot my errors. Working on this 
@@ -36,17 +36,20 @@ using Random = UnityEngine.Random;
   #######################################################################################################################################
     
   #######################################################################################################################################
-  # --- References ---
+  # ------ References ------
   #
   # - The mentioned Maze/Room Dungeon Generation by Bob Nystrom:
-  #       Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, 
-  #     web-based roguelike written in Dart. Hauberk
-  #     -- [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
+  #       Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written 
+  #       in Dart. Hauberk - [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
   #
   #       The Game his Prodcedual generation was developed for and that the article refers to [Very cool project]
-  #     -- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
+  #       -- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
   #
+  # - W3Schools. [n.d.]. C# Multidimensional Arrays. W3Schools. https://www.w3schools.com/cs/cs_arrays_multi.php
   #
+  # - C# Helper. (n.d.). How to solve a maze. C# Helper. http://www.csharphelper.com/howtos/howto_solve_maze.html
+  #
+  # - Unity Technologies. (n.d.). Random.Range Method. Unity Scripting API. https://docs.unity3d.com/ScriptReference/Random.Range.html
   #
   #######################################################################################################################################
 */
@@ -227,7 +230,7 @@ public class LevelGenerator : MonoBehaviour
       {
         for (int xx = x - 1; xx < x + width + 1 && !overlaps; xx++) // X axis loop (Width)
         {
-          Vector2Int roomPos = new Vector2Int(xx, yy); // A vector2 of the current x,y position in the grid of (Room position)
+          Vector2Int roomPos = new(xx, yy); // A vector2 of the current x,y position in the grid of (Room position)
           foreach (var room in RoomList) // For each position of current rooms in room list
           {
             // Check if the absolute differences between the current roomPos and the stored room pos is <=1 for each x/y
@@ -249,7 +252,7 @@ public class LevelGenerator : MonoBehaviour
       #region Add the room to the grid
       StartRegion(); // Start a new region (Increment current region)
 
-      Vector2Int startPos = new Vector2Int(x, y);
+      Vector2Int startPos = new(x, y);
       Rooms.Add(new Room(startPos, width, height)); // Add the room to the RoomList
 
       // loop through grid positions (starting at the randomise x,y position)
@@ -262,7 +265,7 @@ public class LevelGenerator : MonoBehaviour
           // Update the Regions array with the new region information the room tile
           Regions[xx, yy] = CurrentRegion;
           // Add the room position to the RoomList
-          RoomList.Add(new Vector2Int(xx, yy));
+          RoomList.Add(new(xx, yy));
         }
       }
       #endregion
@@ -704,7 +707,7 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  ///
+  /// This method will spawn ladder prefabs at valid required positions
   /// </summary>
   void SpawnLadders()
   {
@@ -724,7 +727,9 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  /// 
+  /// This method checks if the current level that was generated will require a ladder to allow access in the top corner,
+  /// becuase i always create the starting zone in the bottom corner this entry from the top can be generated and sometimes it wont
+  /// depending on the rooms. it simply adds 3 ladders to allow the player the option to access that direction if desired.
   /// </summary>
   void FixStartRoomLadder()
   {
@@ -743,7 +748,7 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  ///
+  /// This method spawns the two light prefab types at the top of paths/rooms at a 33% or 25% chance 
   /// </summary>
   void SpawnLights()
   {
@@ -770,7 +775,7 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  ///
+  /// This method spawns chests and coins in the grid, coins can be spawned in and out of rooms, while chests must be in a room.
   /// </summary>
   void SpawnChestsAndCoins()
   {
@@ -780,12 +785,12 @@ public class LevelGenerator : MonoBehaviour
       {
         if (IsGrassTile(x, y)) // Check that the tile is a grass tile
         {
-          // if so roll a  xx%~ chance to spawn a coin at the postion +1 on the y axis
+          // if so roll a  10%~ chance to spawn a coin at the postion +1 on the y axis
           if (Random.Range(0, 10) == 0) Instantiate(CoinPreFab, new Vector3(x, y + 1, 0), Quaternion.identity); // spawn a coin
 
           if (IsTileInRoomList(x, y + 1)) // Check if the tile above is within a room
           {
-            // if so roll a  xx%~ chance to spawn a chest at the postion +1 on the y axis
+            // if so roll a  7%~ chance to spawn a chest at the postion +1 on the y axis
             if (Random.Range(0, 13) == 0) Instantiate(ChestPreFab, new Vector3(x, y + 1, 0), Quaternion.identity);
           }
         }
@@ -794,7 +799,7 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  /// 
+  /// This method will spawn enemies in the rooms at valid positions 
   /// </summary>
   void SpawnEnemies()
   {
@@ -821,7 +826,8 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  /// 
+  /// A method used to fill in the rooms with large and small trees, as background decorations etc. The method is also prepared to 
+  /// add further objects if needed, (i had planned to add some others but left it how it is) this is commented at the end of this methods functionality.
   /// </summary>
   void SpawnBackgroundObjects()
   {
@@ -912,10 +918,10 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  /// 
+  /// This method takes a room object and returns a list of the positions of the floor tiles in the room
   /// </summary>
   /// <param name="room"></param>
-  /// <returns></returns>
+  /// <returns> A List of the postions for the tiles that would be considered the floor on the room </returns>
   List<Vector2Int> GetRoomFloorPositions(Room room)
   {
     // Declare and empty local list for the positions
@@ -945,7 +951,7 @@ public class LevelGenerator : MonoBehaviour
   /// <remarks>
   /// This method generates a list of possible bush positions on the game level using the GetPossibleBushPositions() method.
   /// It then iterates through each possible position and checks if the tile to the right of the position is of type Grass.
-  /// If it is, a random bush prefab is instantiated at the position with a rotation of 0.
+  /// If it is, a bush prefab is randomly selected from the array of bushes and is instantiated at the position.
   /// </remarks>
   void SpawnBushes()
   {
@@ -963,9 +969,9 @@ public class LevelGenerator : MonoBehaviour
   }
 
   /// <summary>
-  /// 
+  /// Private method to get all the grass tiles in the grid in the form of a list of vect2 ints
   /// </summary>
-  /// <returns></returns>
+  /// <returns> A list of all grass tile postions in the grid </returns>
   List<Vector2Int> GetAllGrassPositions()
   {
     List<Vector2Int> grassTilePositions = new(); // Declare a list to holdthe possible positions
