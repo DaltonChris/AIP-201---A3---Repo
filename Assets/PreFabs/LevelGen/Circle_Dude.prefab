@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b622320be06289745b8f84faf4f989ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
+  speed: 5
   PlayCamera: {fileID: 5455570357797668981}
   GridCamera: {fileID: 0}
 --- !u!95 &842859027457424558
