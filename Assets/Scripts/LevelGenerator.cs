@@ -14,7 +14,7 @@ using Random = UnityEngine.Random;
   ### - 04/2024                                                  ###
   ##################################################################
 
-  ######################################################################################################################################
+  ###############################################################################################################################################
   # --- Comments ---      
   #                                                                           
   #   Bob Nystrom's writeup during his early days of developing "Hauberk" was my main inspiration for my attempt and his explaination 
@@ -33,17 +33,17 @@ using Random = UnityEngine.Random;
   #     - (My autism loves over formatting pointless things man look at those hashtag boxes)
   #     - >33 methods >983lines >lmao >Still the most readable class ive probably ever written (Rip Edward) [My apologies]
   #
-  #######################################################################################################################################
+  #################################################################################################################################################
     
-  #######################################################################################################################################
+  #################################################################################################################################################
   # ------ References ------
   #
   # -- The mentioned Maze/Room Dungeon Generation by Bob Nystrom:
   # - Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written - [2014] 
-  # - https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
+  #   - https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
   #
   # --The Game his Prodcedual generation was developed for and that the article refers to [Very cool project]
-  # - Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
+  #   - Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
   #
   # - W3Schools. [n.d.]. C# Multidimensional Arrays. W3Schools. https://www.w3schools.com/cs/cs_arrays_multi.php
   #
@@ -51,12 +51,13 @@ using Random = UnityEngine.Random;
   #
   # - Unity Technologies. (n.d.). Random.Range Method. Unity Scripting API. https://docs.unity3d.com/ScriptReference/Random.Range.html
   # 
-  # -- Player sprites
-  # - Free Game Assets. (2019). Free Tiny Hero Sprites - Pixel Art. itch.io. https://free-game-assets.itch.io/free-tiny-hero-sprites-pixel-art / https://craftpix.net
+  # -- Player sprites -- https://craftpix.net
+  #   - Free Game Assets. (2019). Free Tiny Hero Sprites - Pixel Art. itch.io. https://free-game-assets.itch.io/free-tiny-hero-sprites-pixel-art 
   #  
-  # -- Level tile / sprites / sheets
-  # - Free Game Assets. (2020). Free Swamp 2D Tileset - Pixel Art. itch.io. https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art / https://craftpix.net
-  #######################################################################################################################################
+  # -- Level tile / sprites / sheets -- https://craftpix.net
+  #   - Free Game Assets. (2020). Free Swamp 2D Tileset - Pixel Art. itch.io. https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art 
+  #
+  ###################################################################################################################################################
 */
 
 public class LevelGenerator : MonoBehaviour
@@ -88,14 +89,17 @@ public class LevelGenerator : MonoBehaviour
   readonly List<Vector2Int> RoomList = new(); // A list of all grid position that contain a room
   readonly List<Room> Rooms = new(); // A dictionary of all rooms in the level
   readonly List<Vector2Int> LadderPositions = new(); // A list of all grid position that contain a ladder
+  bool HasGenerated = false; // Flag to ensure only 1 level is generated per istance loaded.
   #endregion
 
   #region Wait for SpaceBar to Generate / Get Directions-List
   void Update()
   {
-    // If spacebar is pressed
-    if (Input.GetKeyDown(KeyCode.Space)) InitGrid(GridWidth, GridHeight); // Initalise the grid (Start generating)
+    // If spacebar is pressed and the level has not been generated
+    // Initalise the grid (Start generating)
+    if (Input.GetKeyDown(KeyCode.Space) && !HasGenerated) HasGenerated = true; InitGrid(GridWidth, GridHeight);
   }
+
   /// <summary>
   /// A method used get a list of vectors representing the cardinal directions: up, down, left, and right.
   /// (Short hand vector directions for N, S, E, W)
