@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Renamed to Dalton_ as stefan used testPlayer to build from
-public class Dalton_TestPlayer : MonoBehaviour
+public class TestPlayer : MonoBehaviour
 {
     public float speed = 5f; // movementspeed
     public Camera PlayCamera; // players camera
