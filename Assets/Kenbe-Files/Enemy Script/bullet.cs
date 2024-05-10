@@ -13,6 +13,8 @@ public class bullet : MonoBehaviour
     {
         bulletprefab = GetComponent<Rigidbody2D>();
         Target = GameObject.FindGameObjectWithTag("Player");
+
+        //computes bullet direction
         Vector2 bulletDirection = (Target.transform.position - transform.position).normalized * speed;
         bulletprefab.velocity = new Vector2(bulletDirection.x, bulletDirection.y);
         Destroy(this.gameObject, 2);

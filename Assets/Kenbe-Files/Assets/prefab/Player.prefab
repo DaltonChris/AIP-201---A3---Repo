@@ -14,8 +14,6 @@ GameObject:
   - component: {fileID: 6508756733505364321}
   - component: {fileID: 3679981542359471850}
   - component: {fileID: 7187349202072007419}
-  - component: {fileID: 6791552866720108477}
-  - component: {fileID: 5317206095503857325}
   m_Layer: 0
   m_Name: HeroKnight_0
   m_TagString: Untagged
@@ -218,33 +216,6 @@ CircleCollider2D:
   m_Offset: {x: -0.031354666, y: 0.9534383}
   serializedVersion: 2
   m_Radius: 0.3961141
---- !u!114 &6791552866720108477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3299063314801308485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b2d83ea317ca1a4aa77207d1055b3b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 0
-  max_Health: 10
---- !u!114 &5317206095503857325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3299063314801308485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf1dd0ae61ff03438f0cc64ea0ab262, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player_Speed: 50
 --- !u!1 &7379506414159183967
 GameObject:
   m_ObjectHideFlags: 0
