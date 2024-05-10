@@ -97,7 +97,7 @@ public class LevelGenerator : MonoBehaviour
   {
     // If spacebar is pressed and the level has not been generated
     // Initalise the grid (Start generating)
-    if (Input.GetKeyDown(KeyCode.Space) && !HasGenerated) HasGenerated = true; InitGrid(GridWidth, GridHeight);
+    if (Input.GetKeyDown(KeyCode.Space) && !HasGenerated) InitGrid(GridWidth, GridHeight);
   }
 
   /// <summary>
@@ -167,6 +167,8 @@ public class LevelGenerator : MonoBehaviour
   /// <param name="height"> the height of the grid to initalise </param>
   void InitGrid(int width, int height)
   {
+    HasGenerated = true; // Set flag to ensure only 1 level is generated per istance loaded.
+
     #region Ensure Grid size is Odd
     if (width % 2 == 0 || height % 2 == 0) // If width / height are divisable by 2 with no remainder they are even.
     {
