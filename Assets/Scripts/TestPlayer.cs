@@ -1,10 +1,11 @@
 using UnityEngine;
 
+// Renamed to Dalton_ as stefan used testPlayer to build from
 public class TestPlayer : MonoBehaviour
 {
-    public float speed = 5f;
-    public Camera PlayCamera;
-    public Camera GridCamera;
+    public float speed = 5f; // movementspeed
+    public Camera PlayCamera; // players camera
+    public Camera GridCamera; //camera to view entire grid
 
     private Camera currentCamera;
 
@@ -21,9 +22,9 @@ public class TestPlayer : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 movement = new Vector3(horizontalInput, verticalInput, 0f).normalized;
+        Vector3 movement = new Vector3(horizontalInput, verticalInput, 0f).normalized;// basic input to movement vector
 
-        transform.position += movement * speed * Time.deltaTime;
+        transform.position += movement * speed * Time.deltaTime; // move
 
         // Camera switch
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -32,6 +33,7 @@ public class TestPlayer : MonoBehaviour
         }
     }
 
+    // method to switch between cameras (dogey implementation)
     void SwitchCamera()
     {
         if (currentCamera == PlayCamera)
@@ -46,6 +48,7 @@ public class TestPlayer : MonoBehaviour
         }
     }
 
+    // used when switching cameras
     void SetCameraActive(Camera camera)
     {
         PlayCamera.enabled = false;
