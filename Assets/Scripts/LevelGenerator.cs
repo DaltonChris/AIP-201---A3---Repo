@@ -24,12 +24,12 @@ using Random = UnityEngine.Random;
   #           -- Bob's generation involed a top down terminal style generation (at the time, now it has cool pixal art and what not)
   #  
   #    While i heavily relied on his explantion (and still struggled) I worked my own ideas and solutions to have a viable functioning 
-  #    system,writing the C# myself with Unity's qwuirks and work out ways to manage and trouble shoot my errors. Working on this 
+  #    system, working out the C# myself with Unity's qwuirks finding ways to manage and trouble shoot my errors. Working on this 
   #    project I had many issues and challenges with my goal to implement something I truely had to brute force and really hink about 
   #    as my procedual generation was just an idea on how I could Implement and alter a really solid foundational concept. 
   #
   #    I'm pretty stoked on how the levels look now, and do want to build on this in the future & learn more about procedual generation.
-  #    Learnt alot during this assighment! -   
+  #    Learnt alot during this assighment! -   (REMOVE BOTTOM 2 Lines before submit!)
   #     - (My autism loves over formatting pointless things man look at those hashtag boxes)
   #     - >33 methods >983lines >lmao >Still the most readable class ive probably ever written (Rip Edward) [My apologies]
   #
@@ -38,19 +38,24 @@ using Random = UnityEngine.Random;
   #######################################################################################################################################
   # ------ References ------
   #
-  # - The mentioned Maze/Room Dungeon Generation by Bob Nystrom:
-  #       Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written 
-  #       in Dart. Hauberk - [2014] https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
+  # -- The mentioned Maze/Room Dungeon Generation by Bob Nystrom:
+  # - Procedual generation based on Bob Nystrom's, Implementation/Explanation of this method used in his, web-based roguelike written - [2014] 
+  # - https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
   #
-  #       The Game his Prodcedual generation was developed for and that the article refers to [Very cool project]
-  #       -- Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
+  # --The Game his Prodcedual generation was developed for and that the article refers to [Very cool project]
+  # - Hauberk: [2014 - 2024] https://github.com/munificent/hauberk
   #
   # - W3Schools. [n.d.]. C# Multidimensional Arrays. W3Schools. https://www.w3schools.com/cs/cs_arrays_multi.php
   #
   # - C# Helper. (n.d.). How to solve a maze. C# Helper. http://www.csharphelper.com/howtos/howto_solve_maze.html
   #
   # - Unity Technologies. (n.d.). Random.Range Method. Unity Scripting API. https://docs.unity3d.com/ScriptReference/Random.Range.html
-  #
+  # 
+  # -- Player sprites
+  # - Free Game Assets. (2019). Free Tiny Hero Sprites - Pixel Art. itch.io. https://free-game-assets.itch.io/free-tiny-hero-sprites-pixel-art / https://craftpix.net
+  #  
+  # -- Level tile / sprites / sheets
+  # - Free Game Assets. (2020). Free Swamp 2D Tileset - Pixel Art. itch.io. https://free-game-assets.itch.io/free-swamp-2d-tileset-pixel-art / https://craftpix.net
   #######################################################################################################################################
 */
 
