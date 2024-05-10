@@ -44,7 +44,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f227cb2af883b4458d00373e3e5ca78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridWidth: 101
-  GridHeight: 81
-  RoomGenAttempts: 300
+  GridWidth: 151
+  GridHeight: 89
+  RoomGenAttempts: 3000
+  RoomSizeExtention: 5
+  RoomExtentionRate: 8
+  StartRoomSize: 6
   TilePreFab: {fileID: 7253349817582996851, guid: 290da8f28fd7c314bad9f432a7403982, type: 3}
+  CoinPreFab: {fileID: 791208040891551782, guid: ef6e20925b4b53e41a80a01e954e0078, type: 3}
+  ChestPreFab: {fileID: 5371925983560357214, guid: 67469a7a8ddc9884d9a0fb2c557e842d, type: 3}
+  RoomLightPreFab: {fileID: 5881052863996258071, guid: a7b2063b9072a2440bd121d909973556, type: 3}
+  PathLightPreFab: {fileID: 6232284359774768720, guid: 8a9256df8973ddc4c8fd8cbd7cc95b1a, type: 3}
+  EnemyPreFab: {fileID: 6029902021076978789, guid: 9393296475de0d944b7b8b9961014371, type: 3}
+  LadderPreFabs:
+  - {fileID: 1410569259387571614, guid: 76dfa432b1183a24a9cc5f151999784e, type: 3}
+  - {fileID: 1410569259387571614, guid: 51e5dc05b702f7a47b2ac14f525527e3, type: 3}
+  - {fileID: 1410569259387571614, guid: 8d3b6cad7f5476547a5e184632d9a24f, type: 3}
+  - {fileID: 1410569259387571614, guid: 9c954c0c4e81ce848b0b3502f427d139, type: 3}
+  - {fileID: 1410569259387571614, guid: 8a64f29eaf9c2134bb61adf7e7c34c24, type: 3}
+  DeadTreePreFabs:
+  - {fileID: 6015221157692339830, guid: a4802c4189b440048b19d8be294685eb, type: 3}
+  - {fileID: 6015221157692339830, guid: 7aa8a8a08fd7cda4cb9f15cebf035c58, type: 3}
+  - {fileID: 6015221157692339830, guid: f98623b7644c4754ba049768c91c7678, type: 3}
+  LargeTreePrefabs:
+  - {fileID: 6015221157692339830, guid: 89bba8f0264153648bae6ff1aa748478, type: 3}
+  - {fileID: 6015221157692339830, guid: 01872a1dba3ca8a4f963a7e362f86438, type: 3}
+  BushPrefabs:
+  - {fileID: 6015221157692339830, guid: 15c7b3e1112436c41b393ee11d556a2a, type: 3}
+  - {fileID: 6015221157692339830, guid: 0f0c9a4351094b84eb1f699ce3cafb4f, type: 3}
+  - {fileID: 6015221157692339830, guid: 64f22a3a05b0aa14fa529e7b23cba02d, type: 3}
+  - {fileID: 6015221157692339830, guid: 4c891dee164955248b77f46055a9a98f, type: 3}
+  - {fileID: 6015221157692339830, guid: 7ad299612f5a49b49bf155862c5f5929, type: 3}
+  - {fileID: 6015221157692339830, guid: d87b495ca874c4d4b8f28266919b7d9b, type: 3}
