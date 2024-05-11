@@ -153,7 +153,9 @@ MonoBehaviour:
   speed: 5
   jumpForce: 10
   gravity: -30
+  maxHealth: 3
   coinCounterText: {fileID: 0}
+  healthText: {fileID: 0}
   PlayCamera: {fileID: 5455570357797668981}
   GridCamera: {fileID: 0}
   groundLayer:

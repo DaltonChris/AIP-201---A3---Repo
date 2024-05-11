@@ -16,6 +16,7 @@ public class TestPlayer : MonoBehaviour
     public int maxHealth = 3; // Maximum health
     private int currentHealth;
     private bool isImmune = false; // Immunity flag
+    private bool isOnLadder = false; // Ladder flag
 
     public Text coinCounterText; // Reference to the UI text element
     public Text healthText; // Reference to the health UI text element
@@ -46,6 +47,7 @@ public class TestPlayer : MonoBehaviour
         }
         SwitchCameraOnInput();
         HandleUnfreeze();
+        ResetLadderFlag(); // Reset the ladder flag every frame
     }
 
     private void HandleMovement()
@@ -61,6 +63,33 @@ public class TestPlayer : MonoBehaviour
         }
         transform.Translate(move * speed * Time.deltaTime);
 
+        if (isOnLadder)
+        {
+            HandleLadderMovement();
+        }
+        else
+        {
+            HandleGravityAndJumping();
+        }
+    }
+
+    private void HandleLadderMovement()
+    {
+        // Vertical movement on ladder
+        if (Input.GetKey(KeyCode.W))
+        {
+            verticalVelocity = speed;
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime; // Apply normal gravity when not pressing W
+        }
+        Vector3 verticalMove = new Vector3(0, verticalVelocity * Time.deltaTime, 0);
+        transform.Translate(verticalMove);
+    }
+
+    private void HandleGravityAndJumping()
+    {
         // Apply gravity and jumping
         verticalVelocity += gravity * Time.deltaTime;
         if (Input.GetButtonDown("Jump"))
@@ -175,6 +204,12 @@ public class TestPlayer : MonoBehaviour
         UpdateCoinCounterText();
     }
 
+    public void IncrementCoinCounterByAmount(int amount)
+    {
+        coinCounter += amount;
+        UpdateCoinCounterText();
+    }
+
     private void UpdateCoinCounterText()
     {
         if (coinCounterText != null)
@@ -216,10 +251,18 @@ public class TestPlayer : MonoBehaviour
         }
     }
 
-    private void HandleDeath()
-    {
-        // Handle player death
-        Debug.Log("Player Died");
+    private void HandleDeath() // Add player death animations or game over screen here
+    {       
         Destroy(gameObject);
+    }
+
+    public void SetOnLadder(bool onLadder)
+    {
+        isOnLadder = onLadder;
+    }
+
+    private void ResetLadderFlag()
+    {
+        isOnLadder = false;
     }
 }
