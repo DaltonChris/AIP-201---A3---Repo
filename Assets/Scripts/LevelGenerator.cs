@@ -21,17 +21,20 @@ using Random = UnityEngine.Random;
   #   of implementing a room/maze generation algorithm, helped me greatly. After playing with recursive mazes i found his jounal post
   #   the emphasis put on an odd sized grid to ensure viable room and maze spacing, and displaying step by step changes helped in
   #   grasping the topic. 
-  #           -- Bob's generation involed a top down terminal style generation (at the time, now it has cool pixal art and what not)
+  #    -- Bob's generation involed a top down terminal style generation (at the time, now it has cool pixal art and what not), 
+  #       My intrest was soley on the 2D grid creation with setting tiles to paths(his are floors) or walls to create connected levels
   #  
   #    While i heavily relied on his explantion (and still struggled) I worked my own ideas and solutions to have a viable functioning 
-  #    system, working out the C# myself with Unity's qwuirks finding ways to manage and trouble shoot my errors. Working on this 
-  #    project I had many issues and challenges with my goal to implement something I truely had to brute force and really hink about 
-  #    as my procedual generation was just an idea on how I could Implement and alter a really solid foundational concept. 
+  #    system, working out the C# myself with Unity's qwuirks (debuging errors) to trouble shoot my errors was a must at the time, Working on this 
+  #    project I had many issues and challenges with my goal to implement a system that i struggled to fully comprehend at first, making me really
+  #    have to process the why and how for many of the concepts within the journal post and my ideas to be added. As my plan for the procedual generation 
+  #   was just an idea on how I could Implement and alter a really solid foundational concept. 
   #
   #    I'm pretty stoked on how the levels look now, and do want to build on this in the future & learn more about procedual generation.
-  #    Learnt alot during this assighment! -   (REMOVE BOTTOM 2 Lines before submit!)
+  #    Learnt alot during this assighment! -   
+  #  (REMOVE BOTTOM 2 Lines before submit!)
   #     - (My autism loves over formatting pointless things man look at those hashtag boxes)
-  #     - >33 methods >983lines >lmao >Still the most readable class ive probably ever written (Rip Edward) [My apologies]
+  #     - >33 methods >1002lines >lmao >Still the most readable class ive probably ever written (Rip Edward) [My apologies]
   #
   #################################################################################################################################################
     
@@ -848,9 +851,9 @@ public class LevelGenerator : MonoBehaviour
       List<Vector2Int> possibleObjectPositions = GetRoomFloorPositions(room);
       List<Vector2Int> posObjPositions = possibleObjectPositions; // duplicate the list (redundat atm see end of method)
 
-      // Remove the entry position for the room (this is where a ladder is, (only for the bottom of rooms))
+      // Remove the entry position for the room (this is where a ladder is +1 on x for object offsets,)
       posObjPositions.Remove(new Vector2Int(room.EntryPos.x + 1, room.EntryPos.y));
-      //currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y));
+      //currentItemPositions.Remove(new Vector2Int(room.EntryPos.x - 1, room.EntryPos.y)); // not needed (offsets on objests pushed one way for now)
 
       // Remove the rooms start positon from the possible item positons 
       posObjPositions.Remove(new Vector2Int(room.StartPos.x, room.StartPos.y)); //(bottom left corner)
@@ -997,7 +1000,6 @@ public class LevelGenerator : MonoBehaviour
     }
     return grassTilePositions; // return the list of tile positions
   }
-
   #endregion
 
 } // End of Class (stop dyslexia please)
