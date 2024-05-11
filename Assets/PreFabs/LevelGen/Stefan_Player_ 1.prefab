@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4275247988758615870}
   - component: {fileID: 1132979429840730726}
   - component: {fileID: 8892984457312780939}
-  - component: {fileID: 8501429722581797273}
   - component: {fileID: 7776579076711306214}
+  - component: {fileID: 917345984397605358}
   m_Layer: 3
   m_Name: Stefan_Player_ 1
   m_TagString: Player
@@ -77,8 +77,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.8926432, a: 1}
+  m_Sprite: {fileID: -1483210821, guid: 2ab60df6eff2b7647a1f50b3a87fe5a3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -138,29 +138,6 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!114 &8501429722581797273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7056523018327510525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b622320be06289745b8f84faf4f989ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5
-  jumpForce: 10
-  gravity: -30
-  maxHealth: 3
-  coinCounterText: {fileID: 0}
-  healthText: {fileID: 0}
-  PlayCamera: {fileID: 5455570357797668981}
-  GridCamera: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!60 &7776579076711306214
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -197,7 +174,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 4, y: 4}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -205,27 +182,36 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0, y: 0.5}
-      - {x: -0.15234375, y: 0.47265625}
-      - {x: -0.29296875, y: 0.40234375}
-      - {x: -0.40234375, y: 0.29296875}
-      - {x: -0.47265625, y: 0.15234375}
-      - {x: -0.5, y: 0}
-      - {x: -0.47265625, y: -0.15234375}
-      - {x: -0.40234375, y: -0.29296875}
-      - {x: -0.29296875, y: -0.40234375}
-      - {x: -0.15234375, y: -0.47265625}
-      - {x: 0, y: -0.5}
-      - {x: 0.15234375, y: -0.47265625}
-      - {x: 0.29296875, y: -0.40234375}
-      - {x: 0.40234375, y: -0.29296875}
-      - {x: 0.47265625, y: -0.15234375}
-      - {x: 0.5, y: 0}
-      - {x: 0.47265625, y: 0.15234375}
-      - {x: 0.40234375, y: 0.29296875}
-      - {x: 0.29296875, y: 0.40234375}
-      - {x: 0.15234375, y: 0.47265625}
+    - - {x: -1.375, y: 1.75}
+      - {x: -1.375, y: -2}
+      - {x: 0.875, y: -2}
+      - {x: 1.25, y: -1.875}
+      - {x: 1.25, y: 0.5}
+      - {x: 1, y: 1.75}
   m_UseDelaunayMesh: 0
+--- !u!114 &917345984397605358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7056523018327510525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8d80788379e86e49b9341b5f6d497e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  jumpForce: 7
+  gravity: -30
+  maxHealth: 3
+  coinCounterText: {fileID: 0}
+  healthText: {fileID: 0}
+  PlayCamera: {fileID: 5455570357797668981}
+  GridCamera: {fileID: 0}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &7205470549097400615
 GameObject:
   m_ObjectHideFlags: 0

@@ -72,11 +72,12 @@ public class Tile : MonoBehaviour
                 SpriteRenderer.sprite = WallSprite;
                 SpriteRenderer.sortingOrder = 0;
 
-                SpriteRenderer.sortingLayerName = "Walls"; // Stefan ..alters sorting layer
+                SpriteRenderer.sortingLayerName = "Walls"; // Stefan ..alters sorting layer?
                 break;
             case TileType.Path: // Case Path Type, Set Wall Sprite
                 SpriteRenderer.sprite = PathSprite;
                 SpriteRenderer.sortingOrder = -10; // have path seth further back than walls/tiles
+                gameObject.layer = LayerMask.NameToLayer("Default"); // Dalton attempt to bugfix 
                 break;
             case TileType.Grass: // Case Grass Type, Set Grass Sprite
                 SpriteRenderer.sprite = GrassSprite;
