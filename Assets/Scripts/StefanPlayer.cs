@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
-public class TestPlayer : MonoBehaviour
+public class StefanPlayer : MonoBehaviour
 {
     public float speed = 5f;
     public float jumpForce = 7f;
@@ -252,7 +252,7 @@ public class TestPlayer : MonoBehaviour
     }
 
     private void HandleDeath() // Add player death animations or game over screen here
-    {       
+    {
         Destroy(gameObject);
     }
 

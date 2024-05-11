@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, detectionRadius, playerLayer);
         foreach (var hit in hits)
         {
-            TestPlayer player = hit.GetComponent<TestPlayer>();
+            StefanPlayer player = hit.GetComponent<StefanPlayer>();
             if (player != null)
             {
                 // If player detected, deal damage to the player

@@ -18,7 +18,7 @@ public class Coin : MonoBehaviour
         if (hit != null)
         {
             // If player detected, increment the coin counter and destroy the coin
-            TestPlayer player = hit.GetComponent<TestPlayer>();
+            StefanPlayer player = hit.GetComponent<StefanPlayer>();
             if (player != null)
             {
                 player.IncrementCoinCounter();
