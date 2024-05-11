@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1091275297157773938}
   - component: {fileID: 8909126583049457470}
-  - component: {fileID: 3750107103769244196}
   - component: {fileID: -7185299418985850650}
+  - component: {fileID: 6587700473758087710}
   m_Layer: 6
   m_Name: TilePreFab
   m_TagString: Untagged
@@ -86,21 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3750107103769244196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7253349817582996851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f48918289c0f3f54a9933c8e91320b1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WallSprite: {fileID: 21300000, guid: b9e148b4a0608514893d11a124c3429a, type: 3}
-  PathSprite: {fileID: 21300000, guid: 261a38a2bdb857b4f9c7e5349685d4fe, type: 3}
-  GrassSprite: {fileID: 21300000, guid: f7b977feed9184749becb8ed20206c3c, type: 3}
 --- !u!61 &-7185299418985850650
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -146,3 +131,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.006374, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6587700473758087710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7253349817582996851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f48918289c0f3f54a9933c8e91320b1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WallSprite: {fileID: 21300000, guid: 5b638954756dfa04c935162752108dae, type: 3}
+  PathSprite: {fileID: 21300000, guid: 261a38a2bdb857b4f9c7e5349685d4fe, type: 3}
+  GrassSprite: {fileID: 21300000, guid: 14f943eb6f6ad474bacfa355595bd5ed, type: 3}
